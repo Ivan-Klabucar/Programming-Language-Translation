@@ -1,0 +1,11 @@
+skup stanja odvojenih zarezom
+skup prihvatljivih stanja odvojenih zarezom
+Početno stanje
+Ovaj redak i svi ostali retci: Funkcija prijelaza u formatu
+trenutnoStanje,simbolAbecede->skupIdućihStanja. U skupu skupIdućihStanja stanja su odvojena
+zarezom. U definiciji epsilon-prijelaza, umjesto simbola abecede stajat će znak $ (simbol ε
+nadomještava se simbolom $). Prijelazi su leksikografski poredani, promatrajući samo komponente
+prijelaza. Drugim riječima, prvo su navedeni prijelazi za leksikografski najmanje stanje, od
+leksikografski najmanjeg simbola do najvećeg, pa prijelazi za leksikografski drugo najmanje stanje, i
+tako dalje. Skup idućih stanja je prazan ukoliko nisu definirani odgovarajući prijelazi. Prazan skup
+stanja označava se simbolom #.

@@ -1,0 +1,1 @@
+a,b,a,d|a,a,b,b,a|a,b,c,b,a,a|a,b,c,b,a,a,a,b|d,b,c,b,a,a,a,b,c,b,c,b,a,a,a,b,c,b,c,b,a,a,a,b,c,d,a,b,b,a,c,a,b,d,b,a,a,b,c,b,a,d,a,d,a,a,a,b,c,b,a,a|a,b,c,b,c,b,c,b,b,c,b,a,d,a,d,a,a,a,a,b,c,d,a,b
