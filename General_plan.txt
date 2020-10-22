@@ -1,0 +1,18 @@
+GLA.py:
+    -regularne definicije pretvara u regularne izraze
+    -parsira regularne izraze iz pravila u EpNKA i sprema u dogovorenom formatu svaki u zaseban file
+    -radi tuple (poc_stanje, dict "stanje"->list(rbr_pravila,...), dict rbr_pravila -> tuple parametara) i sprema u config file
+LA.py:
+    -učitava konfiguraciju i automate za lex ana
+    -inicijalizira podatkovne strukture potrebne za funkcioniranje lex ana
+    -prolazi po ulaznom programu
+
+Parametri pravila: (string izlaz, bool novi_redak, string novo_stanje = curr_stanje, int index_vracanja = -1)
+
+Struktura direktorija:
+Root
+    -GLA.py - kod generatora
+    -analizator - direktorij u kojem je analizator i sve pripadne datoteke
+        -config - pickleana konfiguracija
+        -automatons - direktorij u koji spremamo definicije automata
+        -LA.py - kod analizatora
