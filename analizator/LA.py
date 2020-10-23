@@ -1,3 +1,4 @@
+import sys
 import pickle
 import EpNKA
 
@@ -5,7 +6,9 @@ class LexicalAnalyzer:
     def __init__(self, config_file_path, automata_dir):
         self.config_file_path = config_file_path  #file with analyzer states and corresponding automata indices and function parameters
         self.automata_dir = automata_dir  #directory with files containing definitions for every automaton
+        self.input = ""  #input file text
         self.automata = []  #automata at indices corresponding to their rule numbers
+        self.first_state = ""
         self.curr_state = ""  #current analyzer state
         self.state_map = {}  #maps rule indices to analyzer states
         self.rule_map = {}  #maps rule parameters to indices
@@ -14,24 +17,20 @@ class LexicalAnalyzer:
         self.end = -1  #index of last analyzed input symbol
         self.last = -1  #index of last recognized input symbol
         self.curr_rule = -1  #last recognized rule number
-        self.input = ""  #input file text
 
         self.configure()
         self.populate_automata()
-        self.load_input()
 
     def configure(self):  #load confguration for this analyzer
-        config_file = open(config_file_path, "rb")
+        config_file = open(self.config_file_path, "rb")
         config = pickle.load(config_file)
-        self.current_state = config[0]
+        self.first_state = config[0]
+        self.current_state = self.first_state
         self.state_map = config[1]
         self.rule_map = config[2]
         config_file.close()
 
     def populate_automata(self):  #fill list of automata from given directory
-        return
-
-    def load_input(self):  #read from stdin into self.input
         return
 
     def apply_rule(self):
@@ -55,12 +54,11 @@ class LexicalAnalyzer:
         self.end = self.begin
         self.begin += 1
 
-
     def output_symbol(self, symbol):
-        return
+        print(symbol + " " + str(line_cnt) + " " + self.input[self.begin:self.last+1])
 
     def output_error(self):
-        return
+        print(self.input[self.begin] + str(self.line_cnt), file = sys.stderr)
 
     def feed_automata(self):
         for index in self.state_map["curr_state"]:
@@ -82,10 +80,22 @@ class LexicalAnalyzer:
         all_empty = True
         for index in self.state_map["curr_state"]:
             all_empty = err_bool and (automata[index].current_states == {})
+            if(not all_empty):
+                break
         return all_empty
 
+    def reset(self):
+        self.reset_automata()
+        self.input = ""
+        self.current_state = self.first_state
+        self.line_cnt = 1
+        self.begin = 0
+        self.end = -1
+        self.last = -1
+        self.curr_rule = -1
 
     def analyze(self):
+        self.input = sys.stdin.read()
         while (self.begin < len(self.input)):
             self.end += 1
             self.feed_automata()
@@ -94,5 +104,11 @@ class LexicalAnalyzer:
                     self.error_recovery()
                 else:
                     self.apply_rule()
+                self.reset_automata()
             else:
                 self.find_valid()
+        self.reset()
+
+def use_example():
+    LA = LexicalAnalyzer("config_file","/automata")  #construction of lexical analyzer
+    LA.analyze()  #loading file from stdin, analyzing and outputting
