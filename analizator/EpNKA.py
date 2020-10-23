@@ -12,7 +12,6 @@ class EpNKA:
         self.populate_data_structures()
         self.calculate_epsilon_neighborhoods()
         self.expand_transitions()
-
         self.current_states = self.epNeigh[self.start]
     
     def populate_data_structures(self): #bez 1. i 3. linije orginalnog ulaza iz utr labosa
@@ -47,7 +46,8 @@ class EpNKA:
             temp.append(fx[1].split(","))
             if temp[2][0] == "#":
                 temp[2] = []
-            self.transitions[temp[0]][temp[1]] = set(temp[2])
+            if(temp[1] not in self.transitions[temp[0]]): self.transitions[temp[0]][temp[1]] = set()
+            self.transitions[temp[0]][temp[1]].update(set(temp[2]))
             if temp[1] == '$':
                 self.epNeigh[temp[0]].update(temp[2]) 
 
