@@ -79,7 +79,8 @@ class AutomatonDefBuilder:
         else:
             prefiksirano = False
             zadnje_stanje = lijevo_stanje
-            for i in range(len(izraz)):
+            i = 0
+            while(i < len(izraz)):
                 if prefiksirano:
                     prefiksirano = False
                     prijelazni_znak = ''
@@ -123,9 +124,10 @@ class AutomatonDefBuilder:
                     self.dodaj_epsilon_prijelaz(y, b)
                     self.dodaj_epsilon_prijelaz(a, b)
                     self.dodaj_epsilon_prijelaz(y, x)
-                    i = i+1
+                    i += 1
                 self.dodaj_epsilon_prijelaz(zadnje_stanje, a)
                 zadnje_stanje = b
+                i += 1
             self.dodaj_epsilon_prijelaz(zadnje_stanje, desno_stanje)
         return lijevo_stanje, desno_stanje
 
@@ -137,5 +139,7 @@ class AutomatonDefBuilder:
 
 
 
-x = AutomatonDefBuilder('aab', 1)
-x.getAutomatonDefinition()
+x = AutomatonDefBuilder('aab|ab*|(ab)*c|(abc*|x)*|a(bb)*a\\(ab\\)*', 1)
+f = open('def.txt', 'w')
+f.write(x.getAutomatonDefinition())
+f.close()
