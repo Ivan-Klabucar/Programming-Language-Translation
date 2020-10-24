@@ -105,20 +105,16 @@ def print_states_from_set(states_for_print, beginning = "|"):
         print("#", end='')
 
 x = EpNKA(1, "def.txt")
-sequences = []
-sequences.extend([x.split(",") for x in input().split("|")])
+sequence = input("sequnce: \n")
+print("The sequence \"{}\" is valid: \n".format(sequence))
+for syb in sequence:
+    x.giveSymb(syb)
 
-for sequence in sequences:
-    print(''.join(sequence), end="")
-    #print_states_from_set(x.current_states, beginning='')
-    for syb in sequence:
-        x.giveSymb(syb)
-        #print_states_from_set(x.current_states)
-    if(x.isValid()):
-        print(" YES")
-    else:
-        print(" NO")
-    x.reset()
+if(x.isValid()):
+    print(" YES")
+else:
+    print(" NO")
+x.reset()
 
 
 #testiranje se vrsi ovako: u def.txt stavi se definicija automata
