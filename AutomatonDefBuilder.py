@@ -47,10 +47,10 @@ class AutomatonDefBuilder:
             i += 1
 
     def dodaj_epsilon_prijelaz(self, lijevo_stanje, desno_stanje):
-        self.transitions += "{},$->{}\n".format(self.makeStateString(lijevo_stanje), self.makeStateString(desno_stanje))
+        self.transitions += "{}plus$->{}\n".format(self.makeStateString(lijevo_stanje), self.makeStateString(desno_stanje))
     
     def dodaj_prijelaz(self, lijevo_stanje, desno_stanje, prijelazni_znak):
-        self.transitions += "{},{}->{}\n".format(self.makeStateString(lijevo_stanje), prijelazni_znak, self.makeStateString(desno_stanje))
+        self.transitions += "{}plus{}->{}\n".format(self.makeStateString(lijevo_stanje), prijelazni_znak, self.makeStateString(desno_stanje))
 
 
     def pretvori(self, izraz):
@@ -86,11 +86,11 @@ class AutomatonDefBuilder:
                     prefiksirano = False
                     prijelazni_znak = ''
                     if izraz[i] == 't':
-                        prijelazni_znak = '\t'
+                        prijelazni_znak = 'tab'
                     elif izraz[i] == 'n':
-                        prijelazni_znak = '\n'
+                        prijelazni_znak = 'newline'
                     elif izraz[i] == '_':
-                        prijelazni_znak = ' '
+                        prijelazni_znak = 'razmak'
                     else:
                         prijelazni_znak = izraz[i]
                     

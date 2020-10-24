@@ -42,10 +42,16 @@ class EpNKA:
             if(x == ''): continue
             fx = x.split("->")
             temp = []
-            temp.extend(fx[0].split(","))
+            temp.extend(fx[0].split("plus"))
             temp.append(fx[1].split(","))
             if temp[2][0] == "#":
                 temp[2] = []
+            if temp[1] == 'tab':
+                temp[1] = '\t'
+            elif temp[1] == 'newline':
+                temp[1] = '\n'
+            elif temp[1] == 'razmak':
+                temp[1] = ' '
             if(temp[1] not in self.transitions[temp[0]]): self.transitions[temp[0]][temp[1]] = set()
             self.transitions[temp[0]][temp[1]].update(set(temp[2]))
             if temp[1] == '$':
@@ -105,17 +111,18 @@ def print_states_from_set(states_for_print, beginning = "|"):
         print("#", end='')
 
 x = EpNKA(1, "def.txt")
-sequences = []
-sequences.extend([x.split(",") for x in input().split("|")])
+sequence = input("sequnce: \n")
+print("The sequence \"{}\" is valid: \n".format(sequence))
 
-for sequence in sequences:
-    print_states_from_set(x.current_states, beginning='')
-    for syb in sequence:
-        x.giveSymb(syb)
-        print_states_from_set(x.current_states)
-    x.reset()
+for syb in sequence:
+    x.giveSymb(syb)
 
-    print()
+if(x.isValid()):
+    print(" YES")
+else:
+    print(" NO")
+x.reset()
+
 
 #testiranje se vrsi ovako: u def.txt stavi se definicija automata
 #sintaksa za def.txt je opisana u kako_izgleda_def.txt

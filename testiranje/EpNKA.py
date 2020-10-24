@@ -42,10 +42,16 @@ class EpNKA:
             if(x == ''): continue
             fx = x.split("->")
             temp = []
-            temp.extend(fx[0].split(","))
+            temp.extend(fx[0].split("plus"))
             temp.append(fx[1].split(","))
             if temp[2][0] == "#":
                 temp[2] = []
+            if temp[1] == 'tab':
+                temp[1] = '\t'
+            elif temp[1] == 'newline':
+                temp[1] = '\n'
+            elif temp[1] == 'razmak':
+                temp[1] = ' '
             if(temp[1] not in self.transitions[temp[0]]): self.transitions[temp[0]][temp[1]] = set()
             self.transitions[temp[0]][temp[1]].update(set(temp[2]))
             if temp[1] == '$':
@@ -107,6 +113,7 @@ def print_states_from_set(states_for_print, beginning = "|"):
 x = EpNKA(1, "def.txt")
 sequence = input("sequnce: \n")
 print("The sequence \"{}\" is valid: \n".format(sequence))
+
 for syb in sequence:
     x.giveSymb(syb)
 
