@@ -18,7 +18,7 @@ class LexicalAnalyzerGenerator:
         line = ''
         while definitions:
             line = f.readline().strip()
-            if line.find('%X') == 0:  # redak sa stanjima
+            if line.find('%X') == 0:
                 definitions = False
                 continue
             self.reg_def_processor.unpack(line)
@@ -29,7 +29,7 @@ class LexicalAnalyzerGenerator:
         self.lex_unit_names = f.readline().strip()[3:].split(' ')
         automata = open('./analizator/automati.txt', 'a')
         rule_num = 0
-        params = ('-', False, '', -1)
+        params = ['-', False, '', -1]
         actions = False
         curr_state = ''
         for line in f:
@@ -57,22 +57,21 @@ class LexicalAnalyzerGenerator:
                     params[2] = cloven[1]
                 elif line.find('VRATI_SE') == 0:
                     cloven = line.split(' ')
-                    params[3] = cloven[1]
-                if line == '}':
-                actions = False
-                self.rule_map.update({rule_num: params})
-                params = ('-', False, '', -1)
-                rule_num+=1
+                    params[3] = int(cloven[1])
+                elif line == '}':
+                    actions = False
+                    self.rule_map.update({rule_num: params})
+                    params = ['-', False, '', -1]
+                    rule_num+=1
+                else:
+                    params[0] = line
+        f.close()
+        automata.close()
+        config = (self.start_state, self.state_map, self.rule_map)
+        config_file = open('./analizator/config', 'wb')
+        pickle.dump(config, config_file)
+        config_file.close()
 
-
-
-#
-# with open('UlaznaDatoteka.txt', 'r') as file:
-#     input_lines = [line.strip() for line in file]
-#
-# regDefs = ""
-# while (input_lines[0][0:2] != "%X"):
-#     regDefs += input_lines[0]
-#     input_lines.pop(0)
-#
-# print(regDefs)
+if __name__ == '__main__':
+    a = LexicalAnalyzerGenerator()
+    a.generate('./ulaz_test.txt')

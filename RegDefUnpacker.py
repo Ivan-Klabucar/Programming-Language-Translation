@@ -33,8 +33,8 @@ class RegDefUnpacker:
         return br % 2 == 0
 
 #Znam da je moj proces testiranja dosta rudimentaran al mi se nije dalo smisljat fensi nacine so ur gonna have to deal with it
-a = RegDefUnpacker()
-a.unpack('{oktalnaZnamenka} 0|1|2|3|4|5|6|7\n{dekadskaZnamenka} {oktalnaZnamenka}|8|9\n{hexZnamenka} a|b|c|d|e|f|{dekadskaZnamenka}|A|B|C|D|E|F\n')
-print(a.library)
-print("--------------------------------")
-print(a.purify("ppppp|{oktalnaZnamenka}|{}|\{oktalnaZnamenka}|{oktalnaZnamenka}"))
+# a = RegDefUnpacker()
+# a.unpack('{oktalnaZnamenka} 0|1|2|3|4|5|6|7\n{dekadskaZnamenka} {oktalnaZnamenka}|8|9\n{hexZnamenka} a|b|c|d|e|f|{dekadskaZnamenka}|A|B|C|D|E|F\n')
+# print(a.library)
+# print("--------------------------------")
+# print(a.purify("ppppp|{oktalnaZnamenka}|{}|\{oktalnaZnamenka}|{oktalnaZnamenka}"))

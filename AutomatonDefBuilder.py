@@ -137,9 +137,9 @@ class AutomatonDefBuilder:
         return result
 
 
-string = input("input: \n")
-
-x = AutomatonDefBuilder(string, 1)
-f = open('./testiranje/def.txt', 'w')
-f.write(x.getAutomatonDefinition())
-f.close()
+# string = input("input: \n")
+#
+# x = AutomatonDefBuilder(string, 1)
+# f = open('./testiranje/def.txt', 'w')
+# f.write(x.getAutomatonDefinition())
+# f.close()
