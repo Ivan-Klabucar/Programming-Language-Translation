@@ -38,11 +38,11 @@ class AutomatonDefBuilder:
         br_zagrada = 0
         i += 1
         while(i < len(izraz)):
-            if izraz[i] == '(': 
+            if izraz[i] == '(' and self.je_operator(izraz, i): 
                 br_zagrada += 1
-            elif izraz[i] == ')' and br_zagrada == 0:
+            elif izraz[i] == ')' and br_zagrada == 0 and self.je_operator(izraz, i):
                 return i
-            elif izraz[i] == ')' and br_zagrada > 0:
+            elif izraz[i] == ')' and br_zagrada > 0 and self.je_operator(izraz, i):
                 br_zagrada -= 1
             i += 1
 
