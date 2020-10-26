@@ -27,7 +27,7 @@ class LexicalAnalyzerGenerator:
         for state in self.states:
             self.state_map.update({state: []})
         self.lex_unit_names = f.readline().strip()[3:].split(' ')
-        automata = open('./analizator/automati.txt', 'a')
+        automata = open('./analizator/automati.txt', 'w')
         rule_num = 0
         params = ['-', False, '', -1]
         actions = False
