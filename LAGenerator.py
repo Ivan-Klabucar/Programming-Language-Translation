@@ -42,7 +42,7 @@ class LexicalAnalyzerGenerator:
                     curr_state = cloven[0][1:]
                     regEx = self.reg_def_processor.purify(cloven[1])
                     self.state_map[curr_state].append(rule_num)
-                    params[2] == curr_state
+                    params[2] = curr_state
                     automata.write("%A," + str(rule_num) + "%D\n")
                     automaton_def = AutomatonDefBuilder(regEx, rule_num)
                     automata.write(automaton_def.getAutomatonDefinition())
