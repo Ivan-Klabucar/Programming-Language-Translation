@@ -44,15 +44,15 @@ class LexicalAnalyzer:
             self.output_symbol(params[0])
         if(params[1]):
             self.line_cnt += 1
-        if(params[2] != -1):
-            self.begin += params[2]
+        if(params[3] != -1):
+            self.begin += params[3]
             self.end = self.begin - 1
         else:
             self.begin = self.last + 1
             self.end = self.last
         self.last = -1
         self.curr_rule = -1
-        self.curr_state = params[3]
+        self.curr_state = params[2]
 
     def error_recovery(self):
         self.output_error()
@@ -66,6 +66,7 @@ class LexicalAnalyzer:
         print(self.input[self.begin] + str(self.line_cnt), file = sys.stderr)
 
     def feed_automata(self):
+        #print("znak: {} ".format(self.input[self.end]), end='')
         for index in self.state_map[self.curr_state]:
             self.automata[index].giveSymb(self.input[self.end])
 
@@ -84,7 +85,7 @@ class LexicalAnalyzer:
     def is_empty(self):
         all_empty = True
         for index in self.state_map[self.curr_state]:
-            all_empty = all_empty and (self.automata[index].current_states == {})
+            all_empty = all_empty and (self.automata[index].current_states == set())
             if(not all_empty):
                 break
         return all_empty
