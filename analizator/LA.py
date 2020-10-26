@@ -24,7 +24,7 @@ class LexicalAnalyzer:
         config_file = open(self.config_file_path, "rb")
         config = pickle.load(config_file)
         self.first_state = config[0]
-        self.current_state = self.first_state
+        self.curr_state = self.first_state
         self.state_map = config[1]
         self.rule_map = config[2]
         config_file.close()
@@ -74,7 +74,7 @@ class LexicalAnalyzer:
             automaton.reset()
 
     def find_valid(self):
-        for index in self.state_map["curr_state"]:
+        for index in self.state_map[self.curr_state]:
             if(self.automata[index].isValid()):
                 self.curr_rule = index
                 self.last = self.end
@@ -83,7 +83,7 @@ class LexicalAnalyzer:
 
     def is_empty(self):
         all_empty = True
-        for index in self.state_map["curr_state"]:
+        for index in self.state_map[self.curr_state]:
             all_empty = all_empty and (self.automata[index].current_states == {})
             if(not all_empty):
                 break
@@ -101,7 +101,7 @@ class LexicalAnalyzer:
 
     def analyze(self):
         #self.input = sys.stdin.read()
-        f = open('./automati/MinusLang_prog.txt', 'r')
+        f = open('MinusLang_prog.txt', 'r')
         self.input = f.read()
         f.close()
         while (self.begin < len(self.input)):
