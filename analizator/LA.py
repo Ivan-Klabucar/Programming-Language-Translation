@@ -1,6 +1,6 @@
 import sys
 import pickle
-import EpNKA
+from EpNKA import EpNKA
 
 class LexicalAnalyzer:
     def __init__(self, config_file_path, automata_dir):
@@ -31,7 +31,13 @@ class LexicalAnalyzer:
         config_file.close()
 
     def populate_automata(self):  #fill list of automata from given directory
-        return
+        with open('automati.txt', 'r') as file:
+            automatonStrings = [x.strip() for x in file.read().split("%E")]
+        for a in automatonStrings:
+            if a == '': continue
+            rule_str, automatonDef = a.split("%D\n")
+            rule = int(rule_str[3:])
+            self.automata.append(EpNKA(rule, automatonDef))
 
     def apply_rule(self):
         params = self.rule_map[self.curr_rule]
