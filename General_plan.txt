@@ -14,5 +14,10 @@ Root
     -GLA.py - kod generatora
     -analizator - direktorij u kojem je analizator i sve pripadne datoteke
         -config - pickleana konfiguracija
-        -automatons - direktorij u koji spremamo definicije automata
+        -automati.txt - file u koji spremamo definicije automata
+            format:
+            %A,<redni broj pravila>\n
+            definicja automata
+            %E
+            %A,<redni broj>.....
         -LA.py - kod analizatora

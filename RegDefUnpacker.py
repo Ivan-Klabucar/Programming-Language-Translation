@@ -2,14 +2,14 @@ class RegDefUnpacker:
     def __init__(self):
         self.library = {}
 
-    def unpack(self, batch_def):
-        lines = batch_def.splitlines()
-        for line in lines:
-            def_list = line.split(' ')
-            definition = def_list[0]
-            regEx = def_list[1]
-            regEx = self.purify(regEx)
-            self.library.update({definition: regEx})
+    def unpack(self, line):
+        #lines = batch_def.splitlines()
+        #for line in lines:
+        def_list = line.split(' ')
+        definition = def_list[0]
+        regEx = def_list[1]
+        regEx = self.purify(regEx)
+        self.library.update({definition: regEx})
 
     def purify(self, regEx):
         for key in self.library:
