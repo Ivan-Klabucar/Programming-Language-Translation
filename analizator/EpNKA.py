@@ -1,8 +1,8 @@
 class EpNKA:
-    def __init__(self, rule, file_path):
+    def __init__(self, rule, definition):
         self.rule = rule  #automaton's rule number
         self.start = '' #starting state of automaton
-        self.file_path = file_path #definition of automaton
+        self.definition = definition #definition of automaton
         self.states = [] # all possible states that the automaton can be in
         self.validStates = [] # obvious
         self.transitions = {} # mapping of all possible transitions 
@@ -15,8 +15,7 @@ class EpNKA:
         self.current_states = self.epNeigh[self.start]
     
     def populate_data_structures(self): #bez 1. i 3. linije orginalnog ulaza iz utr labosa
-        with open(self.file_path, 'r') as file:
-            input_lines = [line.strip() for line in file]
+        input_lines = [line.strip() for line in self.definition.split('\n')]
 
         #inputting all the possible states
         i = 0
@@ -110,18 +109,18 @@ def print_states_from_set(states_for_print, beginning = "|"):
     else:
         print("#", end='')
 
-x = EpNKA(1, "def.txt")
-sequence = input("sequnce: \n")
-print("The sequence \"{}\" is valid: \n".format(sequence))
+# x = EpNKA(1, "def.txt")
+# sequence = input("sequnce: \n")
+# print("The sequence \"{}\" is valid: \n".format(sequence))
 
-for syb in sequence:
-    x.giveSymb(syb)
+# for syb in sequence:
+#     x.giveSymb(syb)
 
-if(x.isValid()):
-    print(" YES")
-else:
-    print(" NO")
-x.reset()
+# if(x.isValid()):
+#     print(" YES")
+# else:
+#     print(" NO")
+# x.reset()
 
 
 #testiranje se vrsi ovako: u def.txt stavi se definicija automata
