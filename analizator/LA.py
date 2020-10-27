@@ -41,7 +41,10 @@ class LexicalAnalyzer:
     def apply_rule(self):
         params = self.rule_map[self.curr_rule]
         if(params[0] != "-"):
-            self.output_symbol(params[0])
+            if(params[3] != -1):
+                print(params[0] + " " + str(self.line_cnt) + " " + self.input[self.begin:self.begin+params[3]])
+            else:
+                print(params[0] + " " + str(self.line_cnt) + " " + self.input[self.begin:self.last+1])
         if(params[1]):
             self.line_cnt += 1
         if(params[3] != -1):
