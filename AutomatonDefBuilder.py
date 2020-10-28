@@ -47,7 +47,7 @@ class AutomatonDefBuilder:
             i += 1
 
     def dodaj_epsilon_prijelaz(self, lijevo_stanje, desno_stanje):
-        self.transitions += "{}plus$->{}\n".format(self.makeStateString(lijevo_stanje), self.makeStateString(desno_stanje))
+        self.transitions += "{}plusepsilon->{}\n".format(self.makeStateString(lijevo_stanje), self.makeStateString(desno_stanje))
     
     def dodaj_prijelaz(self, lijevo_stanje, desno_stanje, prijelazni_znak):
         self.transitions += "{}plus{}->{}\n".format(self.makeStateString(lijevo_stanje), prijelazni_znak, self.makeStateString(desno_stanje))

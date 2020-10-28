@@ -53,7 +53,7 @@ class EpNKA:
                 temp[1] = ' '
             if(temp[1] not in self.transitions[temp[0]]): self.transitions[temp[0]][temp[1]] = set()
             self.transitions[temp[0]][temp[1]].update(set(temp[2]))
-            if temp[1] == '$':
+            if temp[1] == 'epsilon':
                 self.epNeigh[temp[0]].update(temp[2]) 
 
 
