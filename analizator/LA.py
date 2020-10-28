@@ -1,6 +1,7 @@
 import sys
 import pickle
 from EpNKA import EpNKA
+import sys
 
 
 class LexicalAnalyzer:
@@ -102,7 +103,7 @@ class LexicalAnalyzer:
         self.curr_rule = -1
 
     def analyze(self):
-        f = open('MinusLang_prog.txt', 'r')
+        f = sys.stdin
         self.input = f.read()
         f.close()
         while self.end < len(self.input)-1:

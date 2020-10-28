@@ -1,6 +1,7 @@
 from AutomatonDefBuilder import *
 from RegDefUnpacker import *
 import pickle
+import sys
 
 
 class LexicalAnalyzerGenerator:
@@ -12,8 +13,8 @@ class LexicalAnalyzerGenerator:
         self.state_map = {}
         self.rule_map = {}
 
-    def generate(self, input_file):
-        f = open(input_file, 'r')
+    def generate(self):
+        f = sys.stdin
         definitions = True
         line = ''
         while definitions:
@@ -74,4 +75,4 @@ class LexicalAnalyzerGenerator:
 
 if __name__ == '__main__':
     a = LexicalAnalyzerGenerator()
-    a.generate('./ulaz_test.txt')
+    a.generate()

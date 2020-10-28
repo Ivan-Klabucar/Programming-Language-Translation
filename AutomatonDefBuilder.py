@@ -133,7 +133,7 @@ class AutomatonDefBuilder:
 
     def getAutomatonDefinition(self):
         result = self.states + '\n' + self.validState + '\n' + self.startState + '\n' + self.transitions
-        print(result)
+        #print(result)
         return result
 
 
