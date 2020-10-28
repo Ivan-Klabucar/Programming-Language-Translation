@@ -1,4 +1,3 @@
-import sys
 import pickle
 from EpNKA import EpNKA
 import sys
@@ -104,6 +103,7 @@ class LexicalAnalyzer:
 
     def analyze(self):
         f = sys.stdin
+        #f = open('CLang_prog.txt')
         self.input = f.read()
         f.close()
         while self.end < len(self.input)-1:

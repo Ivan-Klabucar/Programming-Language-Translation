@@ -15,6 +15,7 @@ class LexicalAnalyzerGenerator:
 
     def generate(self):
         f = sys.stdin
+        #f = open('C_test.txt', 'r')
         definitions = True
         line = ''
         while definitions:
@@ -39,9 +40,9 @@ class LexicalAnalyzerGenerator:
                 if line[0] == '{':
                     actions = True
                 else:
-                    cloven = line.split('>')
-                    curr_state = cloven[0][1:]
-                    regEx = self.reg_def_processor.purify(cloven[1])
+                    curr_state = line[1:line.find('>')]
+                    filthy_regEx = line[line.find('>')+1:]
+                    regEx = self.reg_def_processor.purify(filthy_regEx)
                     self.state_map[curr_state].append(rule_num)
                     params[2] = curr_state
                     automata.write("%A," + str(rule_num) + "%D\n")
