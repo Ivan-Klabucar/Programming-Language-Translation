@@ -84,11 +84,11 @@ class EpNKA:
 
 # automaton = EpNKA()
 
-# automaton.add_state() # 0
-# automaton.add_state() # 1
-# automaton.add_state() # 2
-# automaton.add_state() # 3
-# automaton.add_state() # 4
+# automaton.add_state('stavka0') # 0
+# automaton.add_state('stavka1') # 1
+# automaton.add_state('stavka2') # 2
+# automaton.add_state('stavka3') # 3
+# automaton.add_state('stavka4') # 4
 # automaton.set_starting_state(0)
 
 # automaton.add_transition(0, 'a', 1)
