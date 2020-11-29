@@ -8,7 +8,8 @@ class EpNKA:
         self.epNeigh = {} # all epsilon neighborhoods 
         self.visited = {} # helper data structure for dfs, keeps track of visited nodes
         self.alphabet = set()
-        self.stavke = {}
+        self.stavke = {}  # {stanje: stavka}
+        self.state_from_stavka = {} # (stavka: stanje)
     
     def set_starting_state(self, x):  # za vanjsku uporabu
         if x in self.transitions:
@@ -16,12 +17,16 @@ class EpNKA:
         else:
             raise "starting state must be an existing state"
     
+    # Radi novo stanje za stvaku, ako je identicna stvaka vec pridruzena nekom stanju
+    # onda se vraca to postojece stanje a ne radi se novo
     def add_state(self, stavka): # za vanjsku uporabu
+        if stavka in self.state_from_stavka: return self.state_from_stavka[stavka]
         self.last_state += 1
         new_state = self.last_state
         self.transitions[new_state] = {}
         self.epNeigh[new_state] = set([new_state])
         self.stavke[new_state] = stavka     # stavka moze biti bilo kakav objekt
+        self.state_from_stavka[stavka] = new_state
         self.visited[new_state] = False
         return new_state
     
