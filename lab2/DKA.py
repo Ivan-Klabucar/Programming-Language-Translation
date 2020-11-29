@@ -62,7 +62,7 @@ class DKA:
                 
 enka = EpNKA()
 
-enka.add_state('stavka0') # 0   Stavka ne mora biti string stavka moze biti bilo kakav objekt samo za ilustraciju je tu string
+enka.add_state('stavka0') # 0   Stavka moze biti bilo sto sto je hashable
 enka.add_state('stavka1') # 1
 enka.add_state('stavka2') # 2
 enka.add_state('stavka3') # 3
