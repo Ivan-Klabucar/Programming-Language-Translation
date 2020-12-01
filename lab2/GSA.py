@@ -10,6 +10,7 @@ class SyntaxAnalyzerGenerator:
         self.syn = []
         self.epNKA = EpNKA()
         self.DKA = None
+        self.table = {}
 
     def parse_input(self):
         f = sys.stdin
@@ -52,11 +53,25 @@ class SyntaxAnalyzerGenerator:
                 self.epNKA.add_transition(curr_item_state, transitions[1][0], next_item_state)
                 if next_item_state not in visited:
                     todo.append(transitions[1][1])
+        self.epNKA.calculate_epsilon_neighborhoods()
 
     def generate_automata(self):
-        self.parse_input()
-        self.fill_epNKA()
+        # self.parse_input()
+        # self.fill_epNKA()
         self.DKA = DKA(self.epNKA)
+
+    def generate_table(self):
+        for state in self.DKA.states:
+            self.table[state] = {}
+            for transition in self.DKA.transitions[state].items():
+                if transition[0] not in self.item_manager.nonterminal:
+                    self.table[state].update({transition[0]:('P', transition[1])})
+                else:
+                    self.table[state].update({transition[0]:('S', transition[1])})
+            for stavka in self.DKA.stavke[state]:
+                if self.item_manager.is_finishing_item(stavka):
+                    for symbol in eval(stavka[2]):
+                        self.table[state].update({symbol:('R', (stavka[0], stavka[1]))})
 
 if __name__ == '__main__':
     im = ItemManager(['a','b'], ['<S>','<A>','<B>'])
@@ -71,4 +86,6 @@ if __name__ == '__main__':
     SAG.item_manager = im
     SAG.fill_epNKA()
     print(SAG.epNKA.print_everything())
+    SAG.generate_automata()
+    SAG.generate_table()
     exit(0)

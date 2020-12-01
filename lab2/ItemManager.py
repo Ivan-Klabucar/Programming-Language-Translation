@@ -119,6 +119,10 @@ class ItemManager:
     def get_start_item(self):
         return ('<S\'>', repr([self.first]), repr(set(['%EOF%'])), 0)
 
+    @staticmethod
+    def is_finishing_item(item):
+        return item[3] == len(eval(item[1]))
+
 
 
 if __name__ == '__main__':

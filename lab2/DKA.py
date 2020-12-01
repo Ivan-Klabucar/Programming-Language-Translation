@@ -2,7 +2,7 @@ from EpNKA import EpNKA
 class DKA:
     def __init__(self, epNKA):
         self.states = []
-        self.stvake = {}
+        self.stavke = {}
         self.transitions = {}
         self.start = -1
         self.states_to_analyze = set()
@@ -28,9 +28,9 @@ class DKA:
     def add_state(self, state, state_set):
         self.states.append(state)
         self.transitions[state] = {}
-        self.stvake[state] = set()
+        self.stavke[state] = set()
         for s in state_set:
-            self.stvake[state].add(self.epNKA.stavke[s])
+            self.stavke[state].add(self.epNKA.stavke[s])
     
     def build_from_epNKA(self):
         while self.states_to_analyze:
@@ -56,7 +56,7 @@ class DKA:
             for symb in self.transitions[state]:
                 print("  {}: {}".format(symb, self.transitions[state][symb]))
             print("Stavke: ", end="")
-            for stavka in self.stvake[state]:
+            for stavka in self.stavke[state]:
                 print("{} ".format(stavka), end="")
             print()
                 
