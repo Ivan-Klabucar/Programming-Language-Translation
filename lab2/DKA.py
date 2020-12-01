@@ -60,23 +60,23 @@ class DKA:
                 print("{} ".format(stavka), end="")
             print()
                 
-enka = EpNKA()
-
-enka.add_state('stavka0') # 0   Stavka moze biti bilo sto sto je hashable
-enka.add_state('stavka1') # 1
-enka.add_state('stavka2') # 2
-enka.add_state('stavka3') # 3
-enka.add_state('stavka4') # 4
-enka.set_starting_state(0)
-
-enka.add_transition(0, 'a', 1)
-enka.add_transition(1, 'b', 2)
-enka.add_transition(2, 'b', 2)
-enka.add_transition(2, 'b', 3)
-enka.add_epsilon_transition(3, 0)
-enka.add_epsilon_transition(0, 4)
-
-enka.calculate_epsilon_neighborhoods()
-
-dka = DKA(enka)
-dka.print_everything()
+# enka = EpNKA()
+#
+# enka.add_state('stavka0') # 0   Stavka moze biti bilo sto sto je hashable
+# enka.add_state('stavka1') # 1
+# enka.add_state('stavka2') # 2
+# enka.add_state('stavka3') # 3
+# enka.add_state('stavka4') # 4
+# enka.set_starting_state(0)
+#
+# enka.add_transition(0, 'a', 1)
+# enka.add_transition(1, 'b', 2)
+# enka.add_transition(2, 'b', 2)
+# enka.add_transition(2, 'b', 3)
+# enka.add_epsilon_transition(3, 0)
+# enka.add_epsilon_transition(0, 4)
+#
+# enka.calculate_epsilon_neighborhoods()
+#
+# dka = DKA(enka)
+# dka.print_everything()

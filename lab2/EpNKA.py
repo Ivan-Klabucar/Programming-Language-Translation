@@ -15,7 +15,7 @@ class EpNKA:
         if x in self.transitions:
             self.start = x
         else:
-            raise "starting state must be an existing state"
+            raise Exception("starting state must be an existing state")
     
     # Radi novo stanje za stvaku, ako je identicna stvaka vec pridruzena nekom stanju
     # onda se vraca to postojece stanje a ne radi se novo
@@ -32,7 +32,7 @@ class EpNKA:
     
     def states_not_in_trans(self, from_state, to_state): 
         if from_state not in self.transitions or to_state not in self.transitions:
-            raise "{} or {} not in transitions".format(from_state, to_state)
+            raise Exception("{} or {} not in transitions".format(from_state, to_state))
 
     def add_transition(self, from_state, symb, to_state): # za vanjsku uporabu
         self.states_not_in_trans(from_state, to_state)
@@ -74,14 +74,14 @@ class EpNKA:
                 self.transitions[x][y].update(accumulator)
 
     def print_everything(self): # za vanjsku uporabu
-        print("Starting state: {}".format(self.start))
+        print("Starting state: {} ({})".format(self.start, self.stavke[self.start])) ################
         print("Transitions:")
         for state in self.transitions:
-            print("{}:".format(state))
+            print("{} ({}):".format(state, self.stavke[state])) ################
             for symb in self.transitions[state]:
                 print("  {}:".format(symb), end="")
                 for to_state in self.transitions[state][symb]:
-                    print(" {},".format(to_state), end="")
+                    print(" {}({}),".format(to_state, self.stavke[to_state]), end="") ################
                 print()
             print("  epsilon neigh: {}".format(self.epNeigh[state]))
             print()

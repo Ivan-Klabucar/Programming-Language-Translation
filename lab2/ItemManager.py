@@ -12,7 +12,7 @@ class ItemManager:
 
     #item_tuple = (lijeva strana produkcije, desna strana produkcije kao string reprezentacija liste,
     # set završnih simbola, index tockice)
-    # novo pocetno stanje: <Start_state_added>
+    # novo pocetno stanje: <S'>
     # simbol za kraj niza: %EOF%
 
     def populate_terminal(self, terminal):
@@ -115,6 +115,9 @@ class ItemManager:
                     else:
                         epsilon_transitions.append((production[curr_position], repr(next_production), repr(next_finish_set), 0))
         return epsilon_transitions, transition
+
+    def get_start_item(self):
+        return ('<S\'>', repr([self.first]), repr(set(['%EOF%'])), 0)
 
 
 
