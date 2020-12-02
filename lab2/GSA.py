@@ -6,13 +6,22 @@ import sys
 
 class SyntaxAnalyzerGenerator:
     def __init__(self):
-        self.item_manager = None
-        self.syn = []
-        self.epNKA = EpNKA()
-        self.DKA = None
-        self.table = {}
+        self.item_manager = None  # Stores grammar and generates LR(1) items
+        self.syn = []  # List of synchronisation symbols
+        self.epNKA = EpNKA()  # Epsilon NFA that models transitions between various LR(1) items
+        self.DKA = None  # DFA that models transitions between LR(1) parser states
+        self.table = {}  # LR(1) parser table (state: (input symbol/nonterminal symbol: action))
 
-    def parse_input(self):
+    # item_tuple = (lijeva strana produkcije, desna strana produkcije kao string reprezentacija liste,
+    # string reprezentacija seta završnih simbola, index tockice, redni broj odgovarajuce produkcije)
+    # novo pocetno stanje: <S'>
+    # simbol za kraj niza: %EOF%
+    # formati akcija:
+    #   ('P', stanje) - pomakni
+    #   ('S', stanje) - stavi
+    #   ('R', (lijeva strana produkcije, desna strana produkcije kao string reprezentacija liste, redni br. produkcije))
+
+    def parse_input(self):  # Reading input definition of LR(1) parser and populating basic data structures
         f = sys.stdin
         line = f.readline().strip()
         nonterminal = line.split(' ')[1:]
@@ -32,7 +41,7 @@ class SyntaxAnalyzerGenerator:
         im.populate_empty()
         im.populate_begins()
 
-    def fill_epNKA(self):
+    def fill_epNKA(self):  # Generating items and linking them with their respective transitions
         todo = []
         todo.append(im.get_start_item())
         visited = set()
@@ -56,11 +65,11 @@ class SyntaxAnalyzerGenerator:
         self.epNKA.calculate_epsilon_neighborhoods()
 
     def generate_automata(self):
-        # self.parse_input()
-        # self.fill_epNKA()
+        # self.parse_input() Otkomentirati prilikom finalne predaje
+        # self.fill_epNKA() Otkomentirati prilikom finalne predaje
         self.DKA = DKA(self.epNKA)
 
-    def generate_table(self):
+    def generate_table(self):  # Generates LR(1) table
         for state in self.DKA.states:
             self.table[state] = {}
             for transition in self.DKA.transitions[state].items():
@@ -71,7 +80,37 @@ class SyntaxAnalyzerGenerator:
             for stavka in self.DKA.stavke[state]:
                 if self.item_manager.is_finishing_item(stavka):
                     for symbol in eval(stavka[2]):
-                        self.table[state].update({symbol:('R', (stavka[0], stavka[1]))})
+                        if self.table[state].get(symbol):
+                            if self.table[state][symbol][0] == 'P':
+                                print('Pomakni/Reduciraj proturječje:'
+                                      'pomakni({})/reduciraj({}->{})\n'
+                                      'Razrješeno u korist akcije pomakni'
+                                      .format(self.table[state][symbol][1], stavka[0], stavka[1]),
+                                      file=sys.stderr)
+                                continue
+                            elif self.table[state][symbol][0] == 'R':
+                                if stavka[4] < self.table[state][symbol][1][2]:
+                                    failed_reduction = self.table[state][symbol][1]
+                                    self.table[state][symbol] = ('R', (stavka[0], stavka[1], stavka[4]))
+                                    successful_reduction = self.table[state][symbol][1]
+                                else:
+                                    successful_reduction = self.table[state][symbol][1]
+                                    failed_reduction = (stavka[0], stavka[1], stavka[4])
+                                print('Pomakni/Reduciraj proturječje:'
+                                      'reduciraj({}->{})/reduciraj({}->{})\n'
+                                      'Razrješeno u korist prve navedene redukcije'
+                                      .format(successful_reduction[0], successful_reduction[1], failed_reduction[0], failed_reduction[1]),
+                                      file=sys.stderr)
+                        else:
+                            self.table[state].update({symbol:('R', (stavka[0], stavka[1], stavka[4]))})
+
+    def generate(self):  # External use: the only method that should be used outside of this class, generates config file for SA
+        self.generate_automata()
+        self.generate_table()
+        config = (self.syn, self.table)
+        config_file = open('./analizator/config', 'wb')
+        pickle.dump(config, config_file)
+        config_file.close()
 
 if __name__ == '__main__':
     im = ItemManager(['a','b'], ['<S>','<A>','<B>'])
@@ -85,7 +124,8 @@ if __name__ == '__main__':
     SAG = SyntaxAnalyzerGenerator()
     SAG.item_manager = im
     SAG.fill_epNKA()
-    print(SAG.epNKA.print_everything())
+    SAG.epNKA.print_everything()
     SAG.generate_automata()
     SAG.generate_table()
+    SAG.generate()
     exit(0)
