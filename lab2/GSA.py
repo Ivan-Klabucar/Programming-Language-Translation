@@ -109,7 +109,7 @@ class SyntaxAnalyzerGenerator:
         self.generate_table()
         config = (self.syn, self.table)
         config_file = open('./analizator/config', 'wb')
-        pickle.dump(config, config_file)
+        pickle.dump(config, config_file)  # Config file format: ([sync], {table})
         config_file.close()
 
 if __name__ == '__main__':
