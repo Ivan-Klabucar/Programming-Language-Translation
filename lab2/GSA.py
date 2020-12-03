@@ -68,8 +68,8 @@ class SyntaxAnalyzerGenerator:
         self.epNKA.calculate_epsilon_neighborhoods()
 
     def generate_automata(self):
-        self.parse_input() #Otkomentirati prilikom finalne predaje
-        self.fill_epNKA() #Otkomentirati prilikom finalne predaje
+        self.parse_input()  # Otkomentirati prilikom finalne predaje
+        self.fill_epNKA()  # Otkomentirati prilikom finalne predaje
         self.DKA = DKA(self.epNKA)
 
     def generate_table(self):  # Generates LR(1) table
@@ -114,7 +114,7 @@ class SyntaxAnalyzerGenerator:
     def generate(self):  # External use: the only method that should be used outside of this class, generates config file for SA
         self.generate_automata()
         self.generate_table()
-        config = (self.syn, self.table)
+        config = (self.syn, self.table, self.DKA.start)
         config_file = open('./analizator/config', 'wb')
         pickle.dump(config, config_file)  # Config file format: ([sync], {table})
         config_file.close()
