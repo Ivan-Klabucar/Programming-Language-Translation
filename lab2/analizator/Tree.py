@@ -34,22 +34,22 @@ class Tree:
 #   c 1 c
 #   a 2 a
 #  c 3 c
-root = Node('<A>')
-bigB = Node('<B>')
-bigC = Node('<C>')
-leaf1 = Node('$')
-leaf2 = Node('c 1 c')
-leaf3 = Node('a 2 a')
-leaf4 = Node('c 3 c')
+# root = Node('<A>')
+# bigB = Node('<B>')
+# bigC = Node('<C>')
+# leaf1 = Node('$')
+# leaf2 = Node('c 1 c')
+# leaf3 = Node('a 2 a')
+# leaf4 = Node('c 3 c')
 
-root.add_child(leaf4)
-root.add_child(bigC)
-root.add_child(bigB)
+# root.add_child(leaf4)
+# root.add_child(bigC)
+# root.add_child(bigB)
 
-bigB.add_child(leaf1)
+# bigB.add_child(leaf1)
 
-bigC.add_child(leaf3)
-bigC.add_child(leaf2)
+# bigC.add_child(leaf3)
+# bigC.add_child(leaf2)
 
-tree = Tree(root)
-tree.print_tree()
+# tree = Tree(root)
+# tree.print_tree()
