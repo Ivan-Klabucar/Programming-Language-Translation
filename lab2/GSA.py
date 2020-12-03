@@ -23,6 +23,7 @@ class SyntaxAnalyzerGenerator:
 
     def parse_input(self):  # Reading input definition of LR(1) parser and populating basic data structures
         f = sys.stdin
+        #f = open('test.txt', 'r')
         line = f.readline().strip()
         nonterminal = line.split(' ')[1:]
         line = f.readline().strip()
@@ -38,20 +39,22 @@ class SyntaxAnalyzerGenerator:
                 continue
             else:
                 self.item_manager.add_production(curr_symbol, line.strip())
-        im.populate_empty()
-        im.populate_begins()
+        self.item_manager.populate_empty()
+        self.item_manager.populate_begins()
+        #f.close()
+
 
     def fill_epNKA(self):  # Generating items and linking them with their respective transitions
         todo = []
-        todo.append(im.get_start_item())
+        todo.append(self.item_manager.get_start_item())
         visited = set()
         while todo:
             curr_item = todo.pop()
             curr_item_state = self.epNKA.add_state(curr_item)
-            if curr_item == im.get_start_item():
+            if curr_item == self.item_manager.get_start_item():
                 self.epNKA.set_starting_state(curr_item_state)
             visited.add(curr_item_state)
-            transitions = im.transitions(curr_item)
+            transitions = self.item_manager.transitions(curr_item)
             for next_item in transitions[0]:
                 next_item_state = self.epNKA.add_state(next_item)
                 self.epNKA.add_epsilon_transition(curr_item_state, next_item_state)
@@ -65,8 +68,8 @@ class SyntaxAnalyzerGenerator:
         self.epNKA.calculate_epsilon_neighborhoods()
 
     def generate_automata(self):
-        # self.parse_input() Otkomentirati prilikom finalne predaje
-        # self.fill_epNKA() Otkomentirati prilikom finalne predaje
+        self.parse_input() #Otkomentirati prilikom finalne predaje
+        self.fill_epNKA() #Otkomentirati prilikom finalne predaje
         self.DKA = DKA(self.epNKA)
 
     def generate_table(self):  # Generates LR(1) table
@@ -79,6 +82,10 @@ class SyntaxAnalyzerGenerator:
                     self.table[state].update({transition[0]:('S', transition[1])})
             for stavka in self.DKA.stavke[state]:
                 if self.item_manager.is_finishing_item(stavka):
+                    if stavka[0] == "<S'>":
+                        for symbol in eval(stavka[2]):
+                            self.table[state].update({symbol:'Prihvati'})
+                        continue
                     for symbol in eval(stavka[2]):
                         if self.table[state].get(symbol):
                             if self.table[state][symbol][0] == 'P':
@@ -113,19 +120,19 @@ class SyntaxAnalyzerGenerator:
         config_file.close()
 
 if __name__ == '__main__':
-    im = ItemManager(['a','b'], ['<S>','<A>','<B>'])
-    im.add_production('<S>','<A>')
-    im.add_production('<A>','<B> <A>')
-    im.add_production('<A>','$')
-    im.add_production('<B>','a <B>')
-    im.add_production('<B>','b')
-    im.populate_empty()
-    im.populate_begins()
+    # im = ItemManager(['a','b'], ['<S>','<A>','<B>'])
+    # im.add_production('<S>','<A>')
+    # im.add_production('<A>','<B> <A>')
+    # im.add_production('<A>','$')
+    # im.add_production('<B>','a <B>')
+    # im.add_production('<B>','b')
+    # im.populate_empty()
+    # im.populate_begins()
     SAG = SyntaxAnalyzerGenerator()
-    SAG.item_manager = im
-    SAG.fill_epNKA()
-    SAG.epNKA.print_everything()
-    SAG.generate_automata()
-    SAG.generate_table()
+    # SAG.item_manager = im
+    # SAG.fill_epNKA()
+    # SAG.epNKA.print_everything()
+    # SAG.generate_automata()
+    # SAG.generate_table()
     SAG.generate()
     exit(0)
