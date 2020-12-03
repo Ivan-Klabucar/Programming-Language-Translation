@@ -1,6 +1,6 @@
-from lab2.ItemManager import *
-from lab2.EpNKA import *
-from lab2.DKA import *
+from ItemManager import *
+from EpNKA import *
+from DKA import *
 import pickle
 import sys
 
