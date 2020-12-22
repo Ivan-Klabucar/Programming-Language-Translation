@@ -8,9 +8,14 @@ class Node:
         self.name = get_name(data)
         self.data = data
         self.children = []
+        self.parent = None
     
     def add_child(self, child):
         self.children.append(child)
+        child.add_parent(self)
+    
+    def add_parent(self, parent):
+        self.parent = parent
 
 class Foo(Node):
     def __init__(self, data):
@@ -81,4 +86,6 @@ for line in sys.stdin:
 
 root = stack[0]
 print_tree(root, 0)
+
+print("Parent of Boo 3 xyzzy: {}".format(root.children[0].children[1].parent.name))
 
