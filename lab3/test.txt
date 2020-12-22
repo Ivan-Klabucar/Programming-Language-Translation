@@ -4,4 +4,9 @@
   Boo 3 xyzzy
   <Foo>
    Boo 12 yxas
+   <Foo>
+    <Foo>
+     <Foo>
+      <Foo>
+       Boo 74 wq
  <Foo>
