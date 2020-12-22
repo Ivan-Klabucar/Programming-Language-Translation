@@ -1,0 +1,7 @@
+<Foo>
+ <Foo>
+  Boo 2 xxy
+  Boo 3 xyzzy
+  <Foo>
+   Boo 12 yxas
+ <Foo>
