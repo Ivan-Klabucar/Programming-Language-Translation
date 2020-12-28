@@ -70,6 +70,7 @@ for line in sys.stdin:
 
 root = stack[0]
 print_tree(root, 0)
-
 print("Parent of Boo 3 xyzzy: {}".format(root.children[0].children[1].parent.name))
+# kad isprogramiramo sve te potrebne klase samo bi pokrenuli:
+# root.provjeri()
 
