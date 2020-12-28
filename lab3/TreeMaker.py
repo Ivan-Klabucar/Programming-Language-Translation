@@ -1,21 +1,5 @@
 import sys
-
-def get_name(string):
-    return string.split()[0]
-
-class Node:
-    def __init__(self, data):
-        self.name = get_name(data)
-        self.data = data
-        self.children = []
-        self.parent = None
-    
-    def add_child(self, child):
-        self.children.append(child)
-        child.add_parent(self)
-    
-    def add_parent(self, parent):
-        self.parent = parent
+from Node import Node, get_name
 
 class Foo(Node):
     def __init__(self, data):
