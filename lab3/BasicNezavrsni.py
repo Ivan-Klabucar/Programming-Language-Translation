@@ -12,11 +12,10 @@ class Prijevodna_jedinica(Node):
             self.tablica_znakova = self.parent.tablica_znakova
         
         if self.isProduction('<vanjska_deklaracija>'):
-            # do smh like:
-            # self.children[0].provjeri(tablica_znakova=self.tablica_znakova)
-            print('hej hej')
+            self.children[0].provjeri()
         elif self.isProduction('<prijevodna_jedinica> <vanjska_deklaracija>'):
-            # do smh else like:
-            # self.children[0].provjeri(tablica_znakova=self.tablica_znakova)
-            # self.children[1].provjeri(tablica_znakova=self.tablica_znakova)
-            print('nej nej')
+            self.children[0].provjeri()
+            self.children[1].provjeri()
+        # else:
+        # Mislim da s ovim znakom nis ne moze poc po krivu ?
+        # msm ne provjeravaju se nikakava pravila, a msm da sintaksna analiza garantira da uvijek da je aktualna jedna od ovih gore produkcija
