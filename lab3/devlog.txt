@@ -16,3 +16,4 @@ L_UGL_ZAGRADA                FIN       Zavrsni.py
 D_UGL_ZAGRADA                FIN       Zavrsni.py
 KR_VOID                      FIN       Zavrsni.py
 <inicijalizator>             FIN       BasicNezavrsni.py
+OP_PRIDRUZI                  FIN       Zavrsni.py
