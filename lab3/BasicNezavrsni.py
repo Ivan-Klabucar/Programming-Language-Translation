@@ -5,11 +5,11 @@ class Prijevodna_jedinica(Node):
     def __init__(self, data):
         super().__init__(data)
     
-    def provjeri(self, tablica_znakova=None):
-        if tablica_znakova == None:                   # Tablica znakova bi bila None samo u korijenu generativnog stabla, sve ostale prijevodne jedinice naslijedile bi tablicu znakova
+    def provjeri(self):
+        if self.parent == None:                   # Tablica znakova bi bila None samo u korijenu generativnog stabla, sve ostale prijevodne jedinice naslijedile bi tablicu znakova
             self.tablica_znakova = TablicaZnakova()
         else:
-            self.tablica_znakova = tablica_znakova
+            self.tablica_znakova = self.parent.tablica_znakova
         
         if self.isProduction('<vanjska_deklaracija>'):
             # do smh like:
