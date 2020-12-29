@@ -1,0 +1,9 @@
+Tu popisujemo znakove koje smo izkodirali, u kojoj su datoteci i jesu li zavrseni (FIN, NONFIN)
+<prijevodna_jedinica>        FIN       BasicNezavrsni.py
+<primarni_izraz>             FIN       BasicNezavrsni.py
+IDN                          FIN       Zavrsni.py
+BROJ                         FIN       Zavrsni.py
+ZNAK                         NONFIN    Zavrsni.py
+NIZ_ZNAKOVA                  NONFIN    Zavrsni.py
+L_ZAGRADA                    FIN       Zavrsni.py
+D_ZAGRADA                    FIN       Zavrsni.py

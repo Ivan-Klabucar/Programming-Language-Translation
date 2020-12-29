@@ -1,5 +1,7 @@
 import sys
 from Node import Node, get_name
+from BasicNezavrsni import *
+from Zavrsni import *
 
 class Foo(Node):
     def __init__(self, data):
@@ -41,6 +43,15 @@ global classes
 classes = dict()
 classes['<Foo>'] = Foo
 classes['Boo'] = Boo
+
+classes['<prijevodna_jedinica>'] = Prijevodna_jedinica
+classes['<primarni_izraz>'] = Primarni_izraz
+classes['IDN'] = IDN
+classes['BROJ'] = BROJ
+classes['ZNAK'] = ZNAK
+classes['NIZ_ZNAKOVA'] = NIZ_ZNAKOVA
+classes['L_ZAGRADA'] = L_ZAGRADA
+classes['D_ZAGRADA'] = D_ZAGRADA
 
 stack = []
 level = 0

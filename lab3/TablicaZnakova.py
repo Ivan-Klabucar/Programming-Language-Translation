@@ -15,9 +15,18 @@ class TablicaZnakova:
         if key in self.tablica:
             return self.tablica[key]
         return default
+    
+    def idn_declared(self, idn):
+        if idn in self.tablica:
+            return self.tablica[idn]
+        elif self.parent:
+            return self.parent.idn_declared(idn)
+        
+        return False  # If this is root and no identificator return False
         
     
 # Po potrebi u ovu klasu dodavat razne atribute koji su potrebni
 class TabZnakEntry:
-    def __init__(self, tip):
+    def __init__(self, tip, lizraz=False):
         self.tip = tip          # npr. 'int' ili 'char'
+        self.lizraz = lizraz

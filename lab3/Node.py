@@ -27,3 +27,6 @@ class Node:
                     result = False
                 i += 1
         return result
+
+    def get_idn_entry(self, idn):
+        return self.tablica_znakova.idn_declared(idn)
