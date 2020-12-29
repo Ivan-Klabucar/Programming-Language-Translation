@@ -13,7 +13,7 @@ class BROJ(Node):
         self.br_linije = data.split(' ')[1]
     
     def is_valid(self):
-        if self.vrijednost < −2147483648 or self.vrijednost >  2147483647:
+        if int(self.vrijednost) < −2147483648 or int(self.vrijednost) >  2147483647:
             return False
         else:
             return True
@@ -38,14 +38,28 @@ class NIZ_ZNAKOVA(Node):
         # implementirat provjeru po 4.3.2 !!!!!
         return True
 
-class L_ZAGRADA(Node):
+class SimpleZavrsni(Node):
     def __init__(self, data):
         super().__init__(data)
-        self.zagrada = data.split(' ')[2]
+        self.val = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
 
-class D_ZAGRADA(Node):
+class L_ZAGRADA(SimpleZavrsni):
     def __init__(self, data):
         super().__init__(data)
-        self.zagrada = data.split(' ')[2]
-        self.br_linije = data.split(' ')[1]
+
+class D_ZAGRADA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class L_UGL_ZAGRADA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class D_UGL_ZAGRADA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_VOID(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)

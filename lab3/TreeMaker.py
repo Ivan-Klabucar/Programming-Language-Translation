@@ -34,6 +34,11 @@ classes['D_ZAGRADA'] = D_ZAGRADA
 classes['<vanjska_deklaracija>'] = Vanjska_deklaracija
 classes['<deklaracija>'] = Deklaracija
 classes['<lista_init_deklaratora>'] = Lista_init_deklaratora
+classes['<init_deklarator>'] = Init_deklarator
+classes['<izravni_deklarator>'] = Izravni_deklarator
+classes['L_UGL_ZAGRADA'] = L_UGL_ZAGRADA
+classes['D_UGL_ZAGRADA'] = D_UGL_ZAGRADA
+classes['KR_VOID'] = KR_VOID
 
 stack = []
 level = 0
