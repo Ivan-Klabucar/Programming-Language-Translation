@@ -1,2 +1,3 @@
 - treba implementirati provjere za ZNAK i NIZ_ZNAKOVA u Zavrsni.py NONFIN
 - treba implementirati klasu za <izraz> NONFIN
+- tribe implementirat tilda funkciju u HelperFunctions.py

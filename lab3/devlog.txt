@@ -10,8 +10,9 @@ D_ZAGRADA                    FIN       Zavrsni.py
 <vanjska_deklaracija>        FIN       BasicNezavrsni.py
 <deklaracija>                FIN       BasicNezavrsni.py
 <lista_init_deklaratora>     FIN       BasicNezavrsni.py
-<init_deklarator>            NONFIN    BasicNezavrsni.py
+<init_deklarator>            FIN       BasicNezavrsni.py
 <izravni_deklarator>         FIN       BasicNezavrsni.py
 L_UGL_ZAGRADA                FIN       Zavrsni.py
 D_UGL_ZAGRADA                FIN       Zavrsni.py
 KR_VOID                      FIN       Zavrsni.py
+<inicijalizator>             FIN       BasicNezavrsni.py

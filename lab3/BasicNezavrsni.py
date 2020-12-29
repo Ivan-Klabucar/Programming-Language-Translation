@@ -1,5 +1,6 @@
 from Node import Node
 from TablicaZnakova import TablicaZnakova, TabZnakEntry
+from HelperFunctions import tilda
 
 class Prijevodna_jedinica(Node):
     def __init__(self, data):
@@ -104,6 +105,10 @@ class Init_deklarator(Node):
     def __init__(self, data):
         super().__init__(data)
     
+    def error_in_production2(self):
+        production = "<izravni_deklarator> OP_PRIDRUZI({},{}) <inicijalizator>"
+        print(production.format(self.children[1].br_linije, self.children[1].val))
+    
     def provjeri(self, ntip):
         self.tablica_znakova = self.parent.tablica_znakova
 
@@ -115,7 +120,25 @@ class Init_deklarator(Node):
         elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
             if not self.children[0].provjeri(ntip=ntip): return False
             if not self.children[2].provjeri(): return False
-            # dovrsi provjeru pod 3.
+            
+            if self.children[0].tip in ['int', 'char', 'const(int)', 'const(char)']:
+                if self.children[2].tip == None or not tilda(self.children[2].tip, 'T')):
+                    self.error_in_production2()
+                    return False
+            elif self.children[0].tip in ['niz(int)', 'niz(char)', 'niz(const(int))', 'niz(const(char))']:
+                if not self.children[2].br_elem or self.children[2].tipovi == None: 
+                    self.error_in_production2()
+                    return False
+                if not self.children[0].br_elem or self.children[2].br_elem > self.children[0].br_elem:
+                    self.error_in_production2()
+                    return False
+                error = False
+                for x in self.children[2].tipovi:
+                    if not tilda(x, 'T'): error = True
+                if error:
+                    self.error_in_production2()
+                    return False
+        
         return True
 
 
@@ -159,3 +182,28 @@ class Izravni_deklarator(Node):
                 return False
             if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova[self.children[0].ime] = TabZnakEntry(tip=f_type, lizraz=False)
         return True
+
+class Inicijalizator(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+        self.br_elem = None
+        self.tipovi = None
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<izraz_pridruzivanja>'):
+            if not self.children[0].provjeri(): return False
+            izraz_pridruzivanja_zavrsni = self.children[0].get_zavrsni()
+            if len(izraz_pridruzivanja_zavrsni) == 1 and izraz_pridruzivanja_zavrsni[0].name = 'NIZ_ZNAKOVA':
+                self.br_elem = len(izraz_pridruzivanja_zavrsni[0].string) - 2 + 1  # -2 zbog navodnika + 1 zbog '\0'
+                self.tipovi = ['char'] * self.br_elem
+            else:
+                self.tip = self.children[0].tip
+        elif self.isProduction('L_VIT_ZAGRADA <lista_izraza_pridruzivanja> D_VIT_ZAGRADA'):
+            if not self.children[0].provjeri(): return False
+            self.br_elem = self.children[0].br_elem
+            self.tipovi = self.children[0].tipovi
+        return True
+

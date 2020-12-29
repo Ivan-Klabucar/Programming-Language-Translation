@@ -30,3 +30,13 @@ class Node:
 
     def get_idn_entry(self, idn):
         return self.tablica_znakova.idn_declared(idn)
+    
+    def get_zavrsni(self):
+        result = []
+        for x in self.children:
+            if not x.children:
+                result.append(x)
+            else:
+                result.extend(x.get_zavrsni())
+        return result
+        

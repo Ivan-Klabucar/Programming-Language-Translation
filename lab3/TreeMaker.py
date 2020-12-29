@@ -39,6 +39,8 @@ classes['<izravni_deklarator>'] = Izravni_deklarator
 classes['L_UGL_ZAGRADA'] = L_UGL_ZAGRADA
 classes['D_UGL_ZAGRADA'] = D_UGL_ZAGRADA
 classes['KR_VOID'] = KR_VOID
+classes['<inicijalizator>'] = Inicijalizator
+classes['OP_PRIDRUZI'] = OP_PRIDRUZI
 
 stack = []
 level = 0

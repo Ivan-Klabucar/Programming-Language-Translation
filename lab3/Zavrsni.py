@@ -63,3 +63,7 @@ class D_UGL_ZAGRADA(SimpleZavrsni):
 class KR_VOID(SimpleZavrsni):
     def __init__(self, data):
         super().__init__(data)
+
+class OP_PRIDRUZI(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
