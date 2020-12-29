@@ -7,3 +7,6 @@ ZNAK                         NONFIN    Zavrsni.py
 NIZ_ZNAKOVA                  NONFIN    Zavrsni.py
 L_ZAGRADA                    FIN       Zavrsni.py
 D_ZAGRADA                    FIN       Zavrsni.py
+<vanjska_deklaracija>        FIN       BasicNezavrsni.py
+<deklaracija>                FIN       BasicNezavrsni.py
+<lista_init_deklaratora>     FIN       BasicNezavrsni.py

@@ -2,28 +2,7 @@ import sys
 from Node import Node, get_name
 from BasicNezavrsni import *
 from Zavrsni import *
-
-class Foo(Node):
-    def __init__(self, data):
-        super().__init__(data)
-
-    def say(self):
-        print("Foo: Hej hej decko ti gay")
-    
-class Boo(Node):
-    def __init__(self, data):
-        super().__init__(data)
-
-    def say(self):
-        print("Boo: Odjebi u skokovima")
-
-class Default(Node):
-    def __init__(self, data):
-        super().__init__(data)
-
-    def say(self):
-        print("Default")
-
+from Nebitni import *
 
 def get_level(string):
     return len(string) - len(string.lstrip())
@@ -52,6 +31,9 @@ classes['ZNAK'] = ZNAK
 classes['NIZ_ZNAKOVA'] = NIZ_ZNAKOVA
 classes['L_ZAGRADA'] = L_ZAGRADA
 classes['D_ZAGRADA'] = D_ZAGRADA
+classes['<vanjska_deklaracija>'] = Vanjska_deklaracija
+classes['<deklaracija>'] = Deklaracija
+classes['<lista_init_deklaratora>'] = Lista_init_deklaratora
 
 stack = []
 level = 0

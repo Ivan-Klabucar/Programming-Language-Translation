@@ -61,3 +61,44 @@ class Primarni_izraz(Node):
             self.tip = self.children[1].tip
             self.lizraz = self.children[1].lizraz
         return True
+
+
+class Vanjska_deklaracija(Node):
+    def __init__(self, data):
+        super().__init__(data)
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<definicija_funkcije>'):
+            if not self.children[0].provjeri(): return False
+        elif self.isProduction('<deklaracija>'):
+            if not self.children[0].provjeri(): return False
+        
+        return True
+
+class Deklaracija(Node):
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<ime_tipa> <lista_init_deklaratora> TOCKAZAREZ'):
+            if not self.children[0].provjeri(): return False
+            if not self.children[1].provjeri(ntip=self.children[0].tip): return False
+        return True
+
+class Lista_init_deklaratora(Node):
+    def __init__(self, data):
+            super().__init__(data)
+
+    def provjeri(self, ntip):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<init_deklarator>'):
+            if not self.children[0].provjeri(ntip=ntip): return False
+        elif self.isProduction('<lista_init_deklaratora> ZAREZ <init_deklarator>'):
+            if not self.children[0].provjeri(ntip=ntip): return False
+            if not self.children[2].provjeri(ntip=ntip): return False
+        return True
