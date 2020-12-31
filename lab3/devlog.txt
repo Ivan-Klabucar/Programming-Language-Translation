@@ -17,3 +17,15 @@ D_UGL_ZAGRADA                FIN       Zavrsni.py
 KR_VOID                      FIN       Zavrsni.py
 <inicijalizator>             FIN       BasicNezavrsni.py
 OP_PRIDRUZI                  FIN       Zavrsni.py
+<izraz_pridruzivanja>        FIN       RabiNezavrsni.py
+<izraz>                      FIN       RabiNezavrsni.py
+<postfiks_izraz>             NONFIN    RabiNezavrsni.py
+<lista_argumenata>           FIN       RabiNezavrsni.py
+<log_ili_izraz>              FIN       RabiNezavrsni.py
+<log_i_izraz>                FIN       RabiNezavrsni.py
+<bin_ili_izraz>              FIN       RabiNezavrsni.py
+<bin_xili_izraz>             FIN       RabiNezavrsni.py
+<bin_i_izraz>                FIN       RabiNezavrsni.py
+<jednakosni_izraz>           FIN       RabiNezavrsni.py
+<odnosni_izraz>              FIN       RabiNezavrsni.py
+<aditivni_izraz>             FIN       RabiNezavrsni.py

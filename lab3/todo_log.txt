@@ -1,3 +1,6 @@
 - treba implementirati provjere za ZNAK i NIZ_ZNAKOVA u Zavrsni.py NONFIN
-- treba implementirati klasu za <izraz> NONFIN
+- treba implementirati klasu za <izraz> FIN
 - tribe implementirat tilda funkciju u HelperFunctions.py
+- myb dodati equals funkciju za usporedivanje X i T?
+- dodati funkcije za rad s funkcijskim tipovima
+- Srediti X u Postfiks_izraz

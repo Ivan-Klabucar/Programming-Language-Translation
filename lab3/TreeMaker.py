@@ -1,6 +1,7 @@
 import sys
 from Node import Node, get_name
 from BasicNezavrsni import *
+from RabiNezavrsni import *
 from Zavrsni import *
 from Nebitni import *
 
@@ -41,6 +42,18 @@ classes['D_UGL_ZAGRADA'] = D_UGL_ZAGRADA
 classes['KR_VOID'] = KR_VOID
 classes['<inicijalizator>'] = Inicijalizator
 classes['OP_PRIDRUZI'] = OP_PRIDRUZI
+classes['<izraz_pridruzivanja>'] = Izraz_pridruzivanja
+classes['<izraz>'] = Izraz
+classes['<postfiks_izraz>'] = Postfiks_izraz
+classes['<lista_argumenata>'] = Lista_argumenata
+classes['<log_ili_izraz>'] = Log_ili_izraz
+classes['<log_i_izraz>'] = Log_i_izraz
+classes['<bin_ili_izraz>'] = Bin_ili_izraz
+classes['<bin_xili_izraz>'] = Bin_xili_izraz
+classes['<bin_i_izraz>'] = Bin_i_izraz
+classes['<jednakosni_izraz>'] = Jednakosni_izraz
+classes['<odnosni_izraz>'] = Odnosni_izraz
+classes['<aditivni_izraz>'] = Aditivni_izraz
 
 stack = []
 level = 0
