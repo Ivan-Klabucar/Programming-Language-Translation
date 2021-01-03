@@ -207,3 +207,210 @@ class Inicijalizator(Node):
             self.tipovi = self.children[0].tipovi
         return True
 
+class Ime_tipa(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<specifikator_tipa>'):
+            if not self.children[0].provjeri(): return False
+            self.tip = self.children[0].tip
+        elif self.isProduction('KR_CONST <specifikator_tipa>'):
+            if not self.children[1].provjeri(): return False
+            if self.children[1].tip =='void':
+                print('<ime_tipa> ::= KR_CONST({},{}) <specifikator_tipa>'.format(self.children[0].br_linije, self.children[0].val))
+                return False
+            self.tip = 'const({})'.format(self.children[1].tip)
+        return True
+
+class Specifikator_tipa(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('KR_VOID'):
+            self.tip = 'void'
+        elif self.isProduction('KR_CHAR'):
+            self.tip = 'char'
+        elif self.isProduction('KR_INT'):
+            self.tip = 'int'
+        else:
+            return False
+        return True
+
+class Cast_izraz(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+        self.lizraz = None
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<unarni_izraz>'):
+            if not self.children[0].provjeri(): return False
+            self.tip = self.children[0].tip
+            self.lizraz = self.children[0].lizraz
+        elif self.isProduction('L_ZAGRADA <ime_tipa> D_ZAGRADA <cast_izraz>'):
+            if not self.children[1].provjeri(): return False
+            if not self.children[3].provjeri(): return False
+            brojevni_tipovi = ['const(int)', 'const(char)', 'char', 'int']
+            if self.children[1].tip not in brojevni_tipovi or self.children[3].tip not in brojevni_tipovi:  # not super duper sure abt this
+                production = '<cast_izraz> ::= L_ZAGRADA({},{}) <ime_tipa> D_ZAGRADA({},{}) <cast_izraz>'
+                print(production.format(self.children[0].br_linije, self.children[0].val, self.children[2].br_linije, self.children[2].val))
+                return False
+            self.tip = self.children[1].tip
+            self.lizraz = False
+        return True
+
+class Unarni_izraz(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+        self.lizraz = None
+    
+    def error_in_production_2_or_3(self):
+        production = ''
+        if self.isProduction('OP_INC <unarni_izraz>'):
+            production = '<unarni_izraz> ::= OP_INC({},{}) <unarni_izraz>'
+        else:
+            production = '<unarni_izraz> ::= OP_DEC({},{}) <unarni_izraz>'
+        print(production.format(self.children[0].br_linije, self.children[0].val))
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<postfiks_izraz>'):
+            if not self.children[0].provjeri(): return False
+            self.tip = self.children[0].tip
+            self.lizraz = self.children[0].lizraz
+        elif self.isProduction('OP_INC <unarni_izraz>') or self.isProduction('OP_DEC <unarni_izraz>'):
+            if not self.children[1].provjeri(): return False
+            if not self.children[1].lizraz or not tilda(self.children[1].tip, 'int'):
+                self.error_in_production_2_or_3()
+                return False
+            self.tip = 'int'
+            self.lizraz = False
+        elif self.isProduction('<unarni_operator> <cast_izraz>'):
+            if not self.children[1].provjeri(): return False
+            if not tilda(self.children[1].tip, 'int'):
+                print('<unarni_izraz> ::= <unarni_operator> <cast_izraz>')
+                return False
+            self.tip = 'int'
+            self.lizraz = False
+        return True
+
+class Unarni_operator(Node):
+    def __init__(self, data):
+        super().__init__(data)
+
+class Multiplikativni_izraz(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+        self.lizraz = None
+    
+    def error_in_group_2(self):
+        production = ''
+        if self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>'):
+            production = '<multiplikativni_izraz> ::= <multiplikativni_izraz> OP_PUTA({},{}) <cast_izraz>'
+        elif self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>'):
+            production = '<multiplikativni_izraz> ::= <multiplikativni_izraz> OP_DIJELI({},{}) <cast_izraz>'
+        else:
+            production = '<multiplikativni_izraz> ::= <multiplikativni_izraz> OP_MOD({},{}) <cast_izraz>'
+        print(production.format(self.children[1].br_linije, self.children[1].val))
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<cast_izraz>'):
+            if not self.children[0].provjeri(): return False
+            self.tip = self.children[0].tip
+            self.lizraz = self.children[0].lizraz
+        elif self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>')   or
+             self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>') or 
+             self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
+
+            if not self.children[0].provjeri(): return False
+            if not tilda(self.children[0].tip, 'int'):
+                self.error_in_group_2()
+                return False
+            if not self.children[2].provjeri(): return False
+            if not tilda(self.children[2].tip, 'int'):
+                self.error_in_group_2()
+                return False
+            self.tip = 'int'
+            self.lizraz = False
+        return True
+
+class Slozena_naredba(Node):
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
+            nova = TablicaZnakova(parent=self.tablica_znakova)
+            if not self.children[1].provjeri(new_tablica=nova): return False
+        elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
+            nova = TablicaZnakova(parent=self.tablica_znakova)
+            if not self.children[1].provjeri(new_tablica=nova): return False
+            if not self.children[2].provjeri(new_tablica=nova): return False
+        return True
+
+class Lista_naredbi(Node):
+    def __init__(self, data):
+        super().__init__(data)
+
+    def provjeri(self, new_tablica=None):
+        if new_tablica:
+            self.tablica_znakova = new_tablica
+        else:
+            self.tablica_znakova = self.parent.tablica_znakova
+        
+        if self.isProduction('<naredba>'):
+            if not self.children[0].provjeri(): return False
+        elif self.isProduction('<lista_naredbi> <naredba>'):
+            if not self.children[0].provjeri(): return False
+            if not self.children[1].provjeri(): return False
+        return True
+
+class Lista_deklaracija(Node):
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def provjeri(self, new_tablica=None):
+        if new_tablica:
+            self.tablica_znakova = new_tablica
+        else:
+            self.tablica_znakova = self.parent.tablica_znakova
+        
+        if self.isProduction('<deklaracija>'):
+            if not self.children[0].provjeri(): return False
+        elif self.isProduction('<lista_deklaracija> <deklaracija>'):
+            if not self.children[0].provjeri(): return False
+            if not self.children[1].provjeri(): return False
+        return True
+
+class Naredba(Node):
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('<slozena_naredba>')  or
+           self.isProduction('<izraz_naredba>')    or
+           self.isProduction('<naredba_grananja>') or
+           self.isProduction('<naredba_petlje>')   or
+           self.isProduction('<naredba_skoka>'):
+            
+            if not self.children[0].provjeri(): return False
+        return True

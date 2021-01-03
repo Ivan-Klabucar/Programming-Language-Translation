@@ -67,3 +67,39 @@ class KR_VOID(SimpleZavrsni):
 class OP_PRIDRUZI(SimpleZavrsni):
     def __init__(self, data):
         super().__init__(data)
+
+class KR_CONST(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_CHAR(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_INT(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_INC(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_DEC(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class PLUS(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class MINUS(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_TILDA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_NEG(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
