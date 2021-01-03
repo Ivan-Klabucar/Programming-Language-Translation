@@ -23,10 +23,19 @@ class TablicaZnakova:
             return self.parent.idn_declared(idn)
         
         return False  # If this is root and no identificator return False
+
+    def function_defined(self, idn):
+        if idn in self.tablica:
+            return self.tablica[idn].defined
+        elif self.parent:
+            return self.parent.function_defined(idn)
+
+        return False
         
     
 # Po potrebi u ovu klasu dodavat razne atribute koji su potrebni
 class TabZnakEntry:
-    def __init__(self, tip, lizraz=False):
+    def __init__(self, tip, lizraz=False, defined=False):
         self.tip = tip          # npr. 'int' ili 'char'
         self.lizraz = lizraz
+        self.defined = defined

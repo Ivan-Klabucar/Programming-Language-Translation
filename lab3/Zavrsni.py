@@ -135,3 +135,71 @@ class KR_BREAK(SimpleZavrsni):
 class KR_RETURN(SimpleZavrsni):
     def __init__(self, data):
         super().__init__(data)
+
+class OP_PUTA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_DIJELI(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_MOD(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_LT(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_LTE(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_GT(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_GTE(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_EQ(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_NEQ(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_I(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_ILI(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_BIN_I(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_BIN_ILI(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class OP_BIN_XILI(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class ZAREZ(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class L_VIT_ZAGRADA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class D_VIT_ZAGRADA(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)

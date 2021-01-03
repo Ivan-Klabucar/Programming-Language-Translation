@@ -12,3 +12,6 @@ def is_non_void_func(function_type):
 
 def param_types(function_type):
     return
+
+def is_const(type):
+    return True
