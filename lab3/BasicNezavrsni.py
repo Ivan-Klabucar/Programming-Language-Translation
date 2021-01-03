@@ -1,6 +1,6 @@
 from Node import Node
 from TablicaZnakova import TablicaZnakova, TabZnakEntry
-from HelperFunctions import tilda
+from HelperFunctions import *
 
 class Prijevodna_jedinica(Node):
     def __init__(self, data):
@@ -414,3 +414,155 @@ class Naredba(Node):
             
             if not self.children[0].provjeri(): return False
         return True
+
+class Izraz_naredba(Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self.tip = None
+    
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('TOCKAZAREZ'):
+            self.tip = 'int'
+        elif self.isProduction('<izraz> TOCKAZAREZ'):
+            if not self.children[0].provjeri(): return False
+            self.tip = self.children[0].tip
+        return True
+
+class Naredba_grananja(Node):
+    def __init__(self, data):
+        super().__init__(data)
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('KR_IF L_ZAGRADA <izraz> D_ZAGRADA <naredba>'):
+            if not self.children[2].provjeri(): return False
+            if not tilda(self.children[2].tip, 'int'):
+                production = '<naredba_grananja> ::= KR_IF({},{}) L_ZAGRADA({},{}) <izraz> D_ZAGRADA({},{}) <naredba>'
+                print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val, self.children[3].br_linije, self.children[3].val))
+                return False
+            if not self.children[4].provjeri(): return False
+        elif self.isProduction('KR_IF L_ZAGRADA <izraz> D_ZAGRADA <naredba> KR_ELSE <naredba>'):
+            if not self.children[2].provjeri(): return False
+            if not tilda(self.children[2].tip, 'int'):
+                production = '<naredba_grananja> ::= KR_IF({},{}) L_ZAGRADA({},{}) <izraz> D_ZAGRADA({},{}) <naredba> KR_ELSE({},{}) <naredba>'
+                print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val, self.children[3].br_linije, self.children[3].val, self.children[5].br_linije, self.children[5].val))
+                return False
+            if not self.children[4].provjeri(): return False
+            if not self.children[6].provjeri(): return False
+        return True
+
+class Naredba_petlje(Node):
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def error_1(self):
+        production = '<naredba_petlje> ::= KR_WHILE({},{}) L_ZAGRADA({},{}) <izraz> D_ZAGRADA({},{}) <naredba>'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val, self.children[3].br_linije, self.children[3].val))
+
+    def error_2(self):
+        production = '<naredba_petlje> ::= KR_FOR({},{}) L_ZAGRADA({},{}) <izraz_naredba> <izraz_naredba> D_ZAGRADA({},{}) <naredba>'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val, self.children[4].br_linije, self.children[4].val))
+
+    def error_3(self):
+        production = '<naredba_petlje> ::= KR_FOR({},{}) L_ZAGRADA({},{}) <izraz_naredba> <izraz_naredba> <izraz> D_ZAGRADA({},{}) <naredba>'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val, self.children[5].br_linije, self.children[5].val))
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('KR_WHILE L_ZAGRADA <izraz> D_ZAGRADA <naredba>'):
+            if not self.children[2].provjeri(): return False
+            if not tilda(self.children[2].tip, 'int'):
+                self.error_1()
+                return False
+            if not self.children[4].provjeri(): return False
+        elif self.isProduction('KR_FOR L_ZAGRADA <izraz_naredba> <izraz_naredba> D_ZAGRADA <naredba>'):
+            if not self.children[2].provjeri(): return False
+            if not self.children[3].provjeri(): return False
+            if not tilda(self.children[3].tip, 'int'):
+                self.error_2()
+                return False
+            if not self.children[5].provjeri(): return False
+        elif self.isProduction('KR_FOR L_ZAGRADA <izraz_naredba> <izraz_naredba> <izraz> D_ZAGRADA <naredba>'):
+            if not self.children[2].provjeri(): return False
+            if not self.children[3].provjeri(): return False
+            if not tilda(self.children[3].tip, 'int'):
+                self.error_3()
+                return False
+            if not self.children[4].provjeri(): return False
+            if not self.children[6].provjeri(): return False
+        return True
+
+class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
+    def __init__(self, data):
+        super().__init__(data)
+    
+    def error_1(self):
+        production = ''
+        if self.isProduction('KR_BREAK TOCKAZAREZ'):
+            production = '<naredba_skoka> ::= KR_BREAK({},{}) TOCKAZAREZ({},{})'
+        else:
+            production = '<naredba_skoka> ::= KR_CONTINUE({},{}) TOCKAZAREZ({},{})'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val))
+
+    def error_2(self):
+        production = '<naredba_skoka> ::= KR_RETURN({},{}) TOCKAZAREZ({},{})'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[1].br_linije, self.children[1].val))
+    
+    def error_3(self):
+        production = '<naredba_skoka> ::= KR_RETURN({},{}) <izraz> TOCKAZAREZ({},{})'
+        print(production.format(self.children[0].br_linije, self.children[0].val, self.children[2].br_linije, self.children[2].val))
+
+    def provjeri(self):
+        self.tablica_znakova = self.parent.tablica_znakova
+
+        if self.isProduction('KR_BREAK TOCKAZAREZ') or self.isProduction('KR_CONTINUE TOCKAZAREZ'):
+            curr = self.parent
+            isInLoop = False
+            while curr:
+                if curr.name == '<naredba_petlje>':
+                    isInLoop = True
+                    break
+                curr = curr.parent
+            if not isInLoop:
+                self.error_1()
+                return False
+        elif self.isProduction('KR_RETURN TOCKAZAREZ'):
+            curr = self.parent
+            isInVoidFunction = False
+            while curr
+                if curr.name == '<definicija_funkcije>':
+                    func_name = curr.children[1].ime
+                    func_entry = curr.get_idn_entry(func_name)
+                    if not func_entry: break
+                    isInVoidFunction = is_void_func(func_entry.tip)
+                    break
+                curr = curr.parent
+            if not isInVoidFunction:
+                self.error_2()
+                return False
+        elif self.isProduction('KR_RETURN <izraz> TOCKAZAREZ'):
+            if not self.children[1].provjeri(): return False
+            curr = self.parent
+            isInFuncOfCorrectType = False
+            while curr
+                if curr.name == '<definicija_funkcije>':
+                    func_name = curr.children[1].ime
+                    func_entry = curr.get_idn_entry(func_name)
+                    if not func_entry: break
+                    isInFuncOfCorrectType = tilda(self.children[1].tip, return_type(func_entry.tip))
+                    break
+                curr = curr.parent
+            if not isInFuncOfCorrectType:
+                self.error_3()
+                return False
+        return True
+
+
+
+
+
+

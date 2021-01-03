@@ -4,3 +4,4 @@
 - myb dodati equals funkciju za usporedivanje X i T?
 - dodati funkcije za rad s funkcijskim tipovima
 - Srediti X u Postfiks_izraz
+- Fkt iztestirat naredbu skoka

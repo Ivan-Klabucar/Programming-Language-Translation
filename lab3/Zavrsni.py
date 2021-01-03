@@ -103,3 +103,35 @@ class OP_TILDA(SimpleZavrsni):
 class OP_NEG(SimpleZavrsni):
     def __init__(self, data):
         super().__init__(data)
+
+class TOCKAZAREZ(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_IF(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_ELSE(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_WHILE(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_FOR(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_CONTINUE(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_BREAK(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)
+
+class KR_RETURN(SimpleZavrsni):
+    def __init__(self, data):
+        super().__init__(data)

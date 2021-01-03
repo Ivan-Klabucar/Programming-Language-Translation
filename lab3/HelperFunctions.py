@@ -2,10 +2,10 @@ def tilda(type1, type2):     # returns type1 ~ type2, needs implementing, has to
     return True
 
 def return_type(function_type):
-    return
+    return function_type.split('->')[1].strip().replace(')', '')
 
 def is_void_func(function_type):
-    return
+    return function_type.split('->')[1].strip().replace(')', '') == 'void'
 
 def is_non_void_func(function_type):
     return

@@ -48,3 +48,15 @@ OP_NEG                       FIN       Zavrsni.py
 <lista_naredbi>              FIN       BasicNezavrsni.py
 <lista_deklaracija>          FIN       BasicNezavrsni.py
 <naredba>                    FIN       BasicNezavrsni.py
+<izraz_naredba>              FIN       BasicNezavrsni.py
+TOCKAZAREZ                   FIN       Zavrsni.py
+<naredba_grananja>           FIN       BasicNezavrsni.py
+KR_IF                        FIN       Zavrsni.py
+KR_ELSE                      FIN       Zavrsni.py
+<naredba_petlje>             FIN       BasicNezavrsni.py
+KR_WHILE                     FIN       Zavrsni.py
+KR_FOR                       FIN       Zavrsni.py
+<naredba_skoka>              FIN       BasicNezavrsni.py
+KR_CONTINUE                  FIN       Zavrsni.py
+KR_BREAK                     FIN       Zavrsni.py
+KR_RETURN                    FIN       Zavrsni.py
