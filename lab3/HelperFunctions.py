@@ -55,5 +55,8 @@ def return_type(function_type):
 def is_void_func(function_type):
     return function_type.split('->')[1].strip().replace(')', '') == 'void'
 
+def is_param_void_func(function_type):
+    return function_type.split('->')[0].strip().replace('funkcija(', '') == 'void'
+
 def param_types(function_type):
     return eval(function_type.split('->')[0].strip()[9:])
