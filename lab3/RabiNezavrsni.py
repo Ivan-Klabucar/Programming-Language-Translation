@@ -83,15 +83,15 @@ class Postfiks_izraz(Node):
             self.lizraz = self.children[0].lizraz
         elif self.isProduction('<postfiks_izraz> L_UGL_ZAGRADA <izraz> D_UGL_ZAGRADA'):
             if not self.children[0].provjeri(): return False
-            if not self.children[0].tip == 'niz(X)':
+            if not (is_seq(self.children[0].tip)[0] and is_X(is_seq(self.children[0].tip)[1])):
                 self.error_in_production()
                 return False
             if not self.children[2].provjeri(): return False
             if not tilda(self.children[2].tip, 'int'):
                 self.error_in_production()
                 return False
-            self.tip = 'X'
-            self.lizraz = ''  # WTFFFFFF
+            self.tip = is_seq(self.children[0].tip)[1]
+            self.lizraz = not is_const(is_seq(self.children[0].tip)[1])[0]
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA D_ZAGRADA'):
             if not self.children[0].provjeri(): return False
             if not is_param_void_func(self.children[0].tip):
