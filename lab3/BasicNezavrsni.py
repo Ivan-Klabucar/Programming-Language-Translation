@@ -157,30 +157,30 @@ class Izravni_deklarator(Node):
                 return False
             lizraz = False
             if ntip in ['int', 'char']: lizraz = True
-            self.tablica_znakova[self.children[0].ime] = TabZnakEntry(tip=ntip, lizraz=lizraz)
+            self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=ntip, lizraz=lizraz))
             self.tip = ntip
         elif self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
             if ntip == 'void' or self.children[0].ime in self.tablica_znakova or int(self.children[2].vrijednost) < 0 or int(self.children[2].vrijednost) > 1024:
                 print("<izravni_deklarator> ::= IDN({},{}) L_UGL_ZAGRADA({},{}) BROJ({},{}) D_UGL_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].vrijednost, self.children[3].br_linije, self.children[3].val))
                 return False
             idn_type = "niz({})".format(ntip)
-            self.tablica_znakova[self.children[0].ime] = TabZnakEntry(tip=idn_type, lizraz=False)
+            self.add(self.children[0].ime, TabZnakEntry(tip=idn_type, lizraz=False))
             self.tip = idn_type
             self.br_elem = int(self.children[2].vrijednost)
         elif self.isProduction('IDN L_ZAGRADA KR_VOID D_ZAGRADA'):
             f_type = "funkcija(void -> {})".format(ntip)
-            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova[self.children[0].ime] != f_type:
+            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova.get(self.children[0].ime) != f_type:
                 print("<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) KR_VOID({},{}) D_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val, self.children[3].br_linije, self.children[3].val))
                 return False
-            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova[self.children[0].ime] = TabZnakEntry(tip=f_type, lizraz=False)
+            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         elif self.isProduction('IDN L_ZAGRADA <lista_parametara> D_ZAGRADA'):
             if not self.children[2].provjeri(): return False
             f_type = "funkcija({} -> {})".format(self.children[2].tipovi, ntip)
-            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova[self.children[0].ime] != f_type:
+            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova.get(self.children[0].ime) != f_type:
                 production = "<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) <lista_parametara> D_ZAGRADA({},{})"
                 print(production.format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val))
                 return False
-            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova[self.children[0].ime] = TabZnakEntry(tip=f_type, lizraz=False)
+            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
 
 class Inicijalizator(Node):
@@ -549,6 +549,7 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
                 if curr.name == '<definicija_funkcije>':
                     func_name = curr.children[1].ime
                     func_entry = curr.get_idn_entry(func_name)
+                    print("func_name: {}, tip: {}, lizraz: {}, defined: {}".format(func_name, func_entry.tip, func_entry.lizraz, func_entry.defined))
                     if not func_entry: break
                     isInFuncOfCorrectType = tilda(self.children[1].tip, return_type(func_entry.tip))
                     break

@@ -13,7 +13,7 @@ class BROJ(Node):
         self.br_linije = data.split(' ')[1]
     
     def is_valid(self):
-        if int(self.vrijednost) < −2147483648 or int(self.vrijednost) >  2147483647:
+        if int(self.vrijednost) < -2147483648 or int(self.vrijednost) >  2147483647:
             return False
         else:
             return True
