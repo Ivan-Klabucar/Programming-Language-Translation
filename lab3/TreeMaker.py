@@ -19,6 +19,44 @@ def print_tree(node, indent):
     for x in node.children:
         print_tree(x, indent + 1)
 
+def check_main(node):
+    if node.tablica_znakova.get('main') and node.tablica_znakova.get('main').tip == 'funkcija(void -> int)' and node.tablica_znakova.get('main').defined:
+        return True
+    for x in node.children:
+        if x.tablica_znakova:
+            if check_main(x):
+                return True
+    return False
+
+def get_defined_functions(root):
+    defined_functions = []
+    if root.isProduction('<vanjska_deklaracija>'):
+        if root.children[0].isProduction('<definicija_funkcije>'):
+            for znak in root.children[0].children[0].tablica_znakova.tablica.items():
+                if is_function(znak[1].tip) and znak[1].defined:
+                    defined_functions.append(znak[0])
+        elif root.isProduction('<prijevodna_jedinica> <vanjska_deklaracija>'):
+            defined_functions.extend(get_defined_functions(root.children[0]))
+            if root.children[1].isProduction('<definicija_funkcije>'):
+                for znak in root.children[1].children[0].tablica_znakova.tablica.items():
+                    if is_function(znak[1].tip) and znak[1].defined:
+                        defined_functions.append(znak[0])
+    return defined_functions
+
+
+def check_function(node, defined_functions):
+
+    for znak in node.tablica_znakova.tablica.items():
+        if is_function(znak[1].tip):
+            if znak[0] not in defined_functions:
+                return False
+    for child in node.children:
+        if child.tablica_znakova:
+            if not check_function(child, defined_functions):
+                return False
+    return True
+
+
 global classes
 classes = dict()
 classes['<Foo>'] = Foo
@@ -134,8 +172,13 @@ for line in sys.stdin:
         append_node(stack, line)
 
 root = stack[0]
-print_tree(root, 0)
-print("Parent of Boo 3 xyzzy: {}".format(root.children[0].children[1].parent.name))
+#print_tree(root, 0)
+#print("Parent of Boo 3 xyzzy: {}".format(root.children[0].children[1].parent.name))
 # kad isprogramiramo sve te potrebne klase samo bi pokrenuli:
-# root.provjeri()
+if root.provjeri():
+    if check_main(root):
+        if not check_function(root, get_defined_functions(root)):
+            print('funkcija')
+    else:
+        print('main')
 
