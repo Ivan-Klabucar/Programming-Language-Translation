@@ -122,7 +122,7 @@ class Init_deklarator(Node):
             if not self.children[2].provjeri(): return False
             
             if self.children[0].tip in ['int', 'char', 'const(int)', 'const(char)']:
-                if self.children[2].tip == None or not tilda(self.children[2].tip, 'T')):
+                if self.children[2].tip == None or not tilda(self.children[2].tip, 'T'):
                     self.error_in_production2()
                     return False
             elif self.children[0].tip in ['niz(int)', 'niz(char)', 'niz(const(int))', 'niz(const(char))']:
@@ -196,7 +196,7 @@ class Inicijalizator(Node):
         if self.isProduction('<izraz_pridruzivanja>'):
             if not self.children[0].provjeri(): return False
             izraz_pridruzivanja_zavrsni = self.children[0].get_zavrsni()
-            if len(izraz_pridruzivanja_zavrsni) == 1 and izraz_pridruzivanja_zavrsni[0].name = 'NIZ_ZNAKOVA':
+            if len(izraz_pridruzivanja_zavrsni) == 1 and izraz_pridruzivanja_zavrsni[0].name == 'NIZ_ZNAKOVA':
                 self.br_elem = len(izraz_pridruzivanja_zavrsni[0].string) - 2 + 1  # -2 zbog navodnika + 1 zbog '\0'
                 self.tipovi = ['char'] * self.br_elem
             else:
@@ -333,10 +333,7 @@ class Multiplikativni_izraz(Node):
             if not self.children[0].provjeri(): return False
             self.tip = self.children[0].tip
             self.lizraz = self.children[0].lizraz
-        elif self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>')   or
-             self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>') or 
-             self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
-
+        elif self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>') or self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>') or self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
             if not self.children[0].provjeri(): return False
             if not tilda(self.children[0].tip, 'int'):
                 self.error_in_group_2()
@@ -406,10 +403,10 @@ class Naredba(Node):
     def provjeri(self):
         self.tablica_znakova = self.parent.tablica_znakova
 
-        if self.isProduction('<slozena_naredba>')  or
-           self.isProduction('<izraz_naredba>')    or
-           self.isProduction('<naredba_grananja>') or
-           self.isProduction('<naredba_petlje>')   or
+        if self.isProduction('<slozena_naredba>')  or  \
+           self.isProduction('<izraz_naredba>')    or  \
+           self.isProduction('<naredba_grananja>') or  \
+           self.isProduction('<naredba_petlje>')   or  \
            self.isProduction('<naredba_skoka>'):
             
             if not self.children[0].provjeri(): return False
@@ -533,7 +530,7 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
         elif self.isProduction('KR_RETURN TOCKAZAREZ'):
             curr = self.parent
             isInVoidFunction = False
-            while curr
+            while curr:
                 if curr.name == '<definicija_funkcije>':
                     func_name = curr.children[1].ime
                     func_entry = curr.get_idn_entry(func_name)
@@ -548,7 +545,7 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
             if not self.children[1].provjeri(): return False
             curr = self.parent
             isInFuncOfCorrectType = False
-            while curr
+            while curr:
                 if curr.name == '<definicija_funkcije>':
                     func_name = curr.children[1].ime
                     func_entry = curr.get_idn_entry(func_name)
