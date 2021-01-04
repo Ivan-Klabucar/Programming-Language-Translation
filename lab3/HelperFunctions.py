@@ -22,7 +22,17 @@ def is_seq(type):
         retv = type[4:-1]
     return retb, retv
 
+def is_function(type):
+    elems = type.split('(')
+    if elems[0] == 'funkcija':
+        return True
+    return False
+
 def tilda(type1, type2): # returns type1 ~ type2, needs implementing, has to support calls like tilda('int', 'T')
+    if type2 == 'T':
+        return is_T(type1)
+    if type2 == 'X':
+        return is_X(type1)
     if type1 == type2:
         return True
     elif type1 == 'char' and type2 == 'int':
