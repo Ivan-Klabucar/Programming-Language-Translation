@@ -491,7 +491,7 @@ class Definicija_funkcije(Node):
                 self.error_in_production()
                 return False
             self.tablica_znakova.add(self.children[1].ime, TabZnakEntry(tip='funkcija(void -> {})'.format(self.children[0].tip), lizraz=False, defined=True))
-            if not self.children[5].provjeri(): return False
+            if not self.children[5].provjeri(imena=[], tipovi=[]): return False
         elif self.isProduction('<ime_tipa> IDN L_ZAGRADA <lista_parametara> D_ZAGRADA <slozena_naredba>'):
             if not self.children[0].provjeri(): return False
             if is_const(self.children[0].tip)[0]:                                  #Implementirati metodu
@@ -506,7 +506,7 @@ class Definicija_funkcije(Node):
                 self.error_in_production2()
                 return False
             self.tablica_znakova.add(self.children[1].ime, TabZnakEntry(tip='funkcija({} -> {})'.format(self.children[3].tipovi, self.children[0].tip), lizraz=False, defined=True))
-            if not self.children[5].provjeri(): return False                #Not rly sure kaj se od mene trazi tu, nije mijasan tekst tog uvjeta
+            if not self.children[5].provjeri(imena=self.children[3].imena, tipovi=self.children[3].tipovi): return False                #Not rly sure kaj se od mene trazi tu, nije mijasan tekst tog uvjeta
         return True
 
 
