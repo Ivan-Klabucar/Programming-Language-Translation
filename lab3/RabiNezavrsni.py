@@ -490,7 +490,7 @@ class Definicija_funkcije(Node):
             if global_idn and global_idn.tip != 'funkcija(void -> {})'.format(self.children[0].tip):
                 self.error_in_production()
                 return False
-            self.tablica_znakova[self.children[1].ime] = TabZnakEntry(tip=self.children[0].tip, lizraz=False, defined=True) #Provjeriti je li dobro koristenje
+            self.tablica_znakova.add(self.children[1].ime, TabZnakEntry(tip=self.children[0].tip, lizraz=False, defined=True))
             if not self.children[5].provjeri(): return False
         elif self.isProduction('<ime_tipa> IDN L_ZAGRADA <lista_parametara> D_ZAGRADA <slozena_naredba>'):
             if not self.children[0].provjeri(): return False
@@ -505,7 +505,7 @@ class Definicija_funkcije(Node):
             if global_idn and global_idn.tip != 'funkcija({} -> {})'.format(self.children[3].tipovi, self.children[0].tip):
                 self.error_in_production2()
                 return False
-            self.tablica_znakova[self.children[1].ime] = TabZnakEntry(tip=self.children[0].tip, lizraz=False, defined=True) #Provjeriti je li dobro koristenje
+            self.tablica_znakova.add(self.children[1].ime, TabZnakEntry(tip=self.children[0].tip, lizraz=False, defined=True))
             if not self.children[5].provjeri(): return False                #Not rly sure kaj se od mene trazi tu, nije mijasan tekst tog uvjeta
         return True
 
