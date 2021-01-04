@@ -549,7 +549,6 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
                 if curr.name == '<definicija_funkcije>':
                     func_name = curr.children[1].ime
                     func_entry = curr.get_idn_entry(func_name)
-                    print("func_name: {}, tip: {}, lizraz: {}, defined: {}".format(func_name, func_entry.tip, func_entry.lizraz, func_entry.defined))
                     if not func_entry: break
                     isInFuncOfCorrectType = tilda(self.children[1].tip, return_type(func_entry.tip))
                     break

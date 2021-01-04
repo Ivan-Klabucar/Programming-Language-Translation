@@ -25,7 +25,11 @@ class ZNAK(Node):
         self.br_linije = data.split(' ')[1]
     
     def is_valid(self):
-        # implementirat provjeru po 4.3.2 !!!!!
+        c = self.znak[1:-1]
+        if len(c) == 1 and c[0] != '\\': return True
+        if len(c) == 1 and c[0] == '\\': return False
+        if len(c) > 1 and c[0] != '\\': return False
+        if c[0] == '\\' and c[1] not in ['t', 'n', '0', '\\', '\'', '"']: return False
         return True
 
 class NIZ_ZNAKOVA(Node):
@@ -35,7 +39,17 @@ class NIZ_ZNAKOVA(Node):
         self.br_linije = data.split(' ')[1]
     
     def is_valid(self):
-        # implementirat provjeru po 4.3.2 !!!!!
+        s = self.string[1:-1]
+        i = 0
+        escaped = False
+        while i < len(s):
+            if escaped:
+                if s[i] not in ['t', 'n', '0', '\\', '\'', '"']: return False
+                escaped = False
+            else:
+                if s[i] == '\\': escaped = True
+            i += 1
+        if escaped: return False
         return True
 
 class SimpleZavrsni(Node):
