@@ -26,6 +26,7 @@ class ZNAK(Node):
     
     def is_valid(self):
         c = self.znak[1:-1]
+        if len(c) == 0: return False
         if len(c) == 1 and c[0] != '\\': return True
         if len(c) == 1 and c[0] == '\\': return False
         if len(c) > 1 and c[0] != '\\': return False
