@@ -480,7 +480,7 @@ class Definicija_funkcije(Node):
 
         if self.isProduction('<ime_tipa> IDN L_ZAGRADA KR_VOID D_ZAGRADA <slozena_naredba>'):
             if not self.children[0].provjeri(): return False
-            if is_const(self.children[0])[0]:                                  #Implementirati metodu
+            if is_const(self.children[0].tip)[0]:                                  #Implementirati metodu
                 self.error_in_production()
                 return False
             if self.tablica_znakova.function_defined(self.children[1].ime):
@@ -494,7 +494,7 @@ class Definicija_funkcije(Node):
             if not self.children[5].provjeri(): return False
         elif self.isProduction('<ime_tipa> IDN L_ZAGRADA <lista_parametara> D_ZAGRADA <slozena_naredba>'):
             if not self.children[0].provjeri(): return False
-            if is_const(self.children[0])[0]:                                  #Implementirati metodu
+            if is_const(self.children[0].tip)[0]:                                  #Implementirati metodu
                 self.error_in_production2()
                 return False
             if self.tablica_znakova.function_defined(self.children[1].ime):
