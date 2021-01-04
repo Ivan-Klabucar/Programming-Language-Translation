@@ -122,7 +122,10 @@ class Init_deklarator(Node):
             if not self.children[2].provjeri(): return False
             
             if self.children[0].tip in ['int', 'char', 'const(int)', 'const(char)']:
-                if self.children[2].tip == None or not tilda(self.children[2].tip, 'T'):
+                [retb, retv] = is_const(self.children[0].tip)
+                correct_type = self.children[0].tip
+                if retb: correct_type = retv
+                if self.children[2].tip == None or not tilda(self.children[2].tip, correct_type):
                     self.error_in_production2()
                     return False
             elif self.children[0].tip in ['niz(int)', 'niz(char)', 'niz(const(int))', 'niz(const(char))']:
@@ -133,8 +136,11 @@ class Init_deklarator(Node):
                     self.error_in_production2()
                     return False
                 error = False
+                correct_type = is_seq(self.children[0].tip)[1]
+                [retb, retv] = is_const(is_seq(self.children[0].tip)[1])
+                if retb: correct_type = is_const(is_seq(self.children[0].tip)[1])[1]
                 for x in self.children[2].tipovi:
-                    if not tilda(x, 'T'): error = True
+                    if not tilda(x, correct_type): error = True
                 if error:
                     self.error_in_production2()
                     return False
@@ -152,7 +158,7 @@ class Izravni_deklarator(Node):
         self.tablica_znakova = self.parent.tablica_znakova
 
         if self.isProduction('IDN'):
-            if ntip == 'void' or self.children[0].ime in self.tablica_znakova:
+            if ntip == 'void' or self.children[0].ime in self.tablica_znakova.tablica:
                 print("<izravni_deklarator> ::= IDN({},{})".format(self.children[0].br_linije, self.children[0].ime))
                 return False
             lizraz = False
@@ -160,7 +166,7 @@ class Izravni_deklarator(Node):
             self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=ntip, lizraz=lizraz))
             self.tip = ntip
         elif self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
-            if ntip == 'void' or self.children[0].ime in self.tablica_znakova or int(self.children[2].vrijednost) < 0 or int(self.children[2].vrijednost) > 1024:
+            if ntip == 'void' or self.children[0].ime in self.tablica_znakova.tablica or int(self.children[2].vrijednost) < 0 or int(self.children[2].vrijednost) > 1024:
                 print("<izravni_deklarator> ::= IDN({},{}) L_UGL_ZAGRADA({},{}) BROJ({},{}) D_UGL_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].vrijednost, self.children[3].br_linije, self.children[3].val))
                 return False
             idn_type = "niz({})".format(ntip)
@@ -169,18 +175,18 @@ class Izravni_deklarator(Node):
             self.br_elem = int(self.children[2].vrijednost)
         elif self.isProduction('IDN L_ZAGRADA KR_VOID D_ZAGRADA'):
             f_type = "funkcija(void -> {})".format(ntip)
-            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova.get(self.children[0].ime) != f_type:
+            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime) != f_type:
                 print("<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) KR_VOID({},{}) D_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val, self.children[3].br_linije, self.children[3].val))
                 return False
-            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
+            if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         elif self.isProduction('IDN L_ZAGRADA <lista_parametara> D_ZAGRADA'):
             if not self.children[2].provjeri(): return False
             f_type = "funkcija({} -> {})".format(self.children[2].tipovi, ntip)
-            if self.children[0].ime in self.tablica_znakova and self.tablica_znakova.get(self.children[0].ime) != f_type:
+            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime) != f_type:
                 production = "<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) <lista_parametara> D_ZAGRADA({},{})"
                 print(production.format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val))
                 return False
-            if self.children[0].ime not in self.tablica_znakova: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
+            if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
 
 class Inicijalizator(Node):
