@@ -356,16 +356,20 @@ class Slozena_naredba(Node):
     def __init__(self, data):
         super().__init__(data)
     
-    def provjeri(self):
-        self.tablica_znakova = self.parent.tablica_znakova
+    def provjeri(self, imena=None, tipovi=None):
+        self.tablica_znakova = TablicaZnakova(parent=self.parent.tablica_znakova)
+        if imena and tipovi:
+            for x in imena:
+                lizraz = False
+                curr_type = tipovi.pop(0)
+                if curr_type in ['int', 'char']: lizraz = True
+                self.tablica_znakova.add(key=x, entry=TabZnakEntry(tip=curr_type, lizraz=lizraz))
 
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
-            nova = TablicaZnakova(parent=self.tablica_znakova)
-            if not self.children[1].provjeri(new_tablica=nova): return False
+            if not self.children[1].provjeri(new_tablica=self.tablica_znakova): return False
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
-            nova = TablicaZnakova(parent=self.tablica_znakova)
-            if not self.children[1].provjeri(new_tablica=nova): return False
-            if not self.children[2].provjeri(new_tablica=nova): return False
+            if not self.children[1].provjeri(new_tablica=self.tablica_znakova): return False
+            if not self.children[2].provjeri(new_tablica=self.tablica_znakova): return False
         return True
 
 class Lista_naredbi(Node):
