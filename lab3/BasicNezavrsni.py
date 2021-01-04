@@ -106,7 +106,7 @@ class Init_deklarator(Node):
         super().__init__(data)
     
     def error_in_production2(self):
-        production = "<izravni_deklarator> OP_PRIDRUZI({},{}) <inicijalizator>"
+        production = "<init_deklarator> ::= <izravni_deklarator> OP_PRIDRUZI({},{}) <inicijalizator>"
         print(production.format(self.children[1].br_linije, self.children[1].val))
     
     def provjeri(self, ntip):
@@ -170,7 +170,7 @@ class Izravni_deklarator(Node):
                 print("<izravni_deklarator> ::= IDN({},{}) L_UGL_ZAGRADA({},{}) BROJ({},{}) D_UGL_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].vrijednost, self.children[3].br_linije, self.children[3].val))
                 return False
             idn_type = "niz({})".format(ntip)
-            self.add(self.children[0].ime, TabZnakEntry(tip=idn_type, lizraz=False))
+            self.tablica_znakova.add(self.children[0].ime, TabZnakEntry(tip=idn_type, lizraz=False))
             self.tip = idn_type
             self.br_elem = int(self.children[2].vrijednost)
         elif self.isProduction('IDN L_ZAGRADA KR_VOID D_ZAGRADA'):

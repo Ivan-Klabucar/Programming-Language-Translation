@@ -29,6 +29,7 @@ class ZNAK(Node):
         if len(c) == 0: return False
         if len(c) == 1 and c[0] != '\\': return True
         if len(c) == 1 and c[0] == '\\': return False
+        if len(c) > 2: return False
         if len(c) > 1 and c[0] != '\\': return False
         if c[0] == '\\' and c[1] not in ['t', 'n', '0', '\\', '\'', '"']: return False
         return True
