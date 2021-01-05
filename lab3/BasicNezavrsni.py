@@ -175,16 +175,16 @@ class Izravni_deklarator(Node):
             self.br_elem = int(self.children[2].vrijednost)
         elif self.isProduction('IDN L_ZAGRADA KR_VOID D_ZAGRADA'):
             f_type = "funkcija(void -> {})".format(ntip)
-            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime) != f_type:
+            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime).tip != f_type:
                 print("<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) KR_VOID({},{}) D_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val, self.children[3].br_linije, self.children[3].val))
                 return False
             if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         elif self.isProduction('IDN L_ZAGRADA <lista_parametara> D_ZAGRADA'):
             if not self.children[2].provjeri(): return False
             f_type = "funkcija({} -> {})".format(self.children[2].tipovi, ntip)
-            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime) != f_type:
+            if self.children[0].ime in self.tablica_znakova.tablica and self.tablica_znakova.get(self.children[0].ime).tip != f_type:
                 production = "<izravni_deklarator> ::= IDN({},{}) L_ZAGRADA({},{}) <lista_parametara> D_ZAGRADA({},{})"
-                print(production.format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].val))
+                print(production.format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[3].br_linije, self.children[3].val))
                 return False
             if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
