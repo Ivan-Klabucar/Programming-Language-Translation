@@ -208,9 +208,9 @@ class Inicijalizator(Node):
             else:
                 self.tip = self.children[0].tip
         elif self.isProduction('L_VIT_ZAGRADA <lista_izraza_pridruzivanja> D_VIT_ZAGRADA'):
-            if not self.children[0].provjeri(): return False
-            self.br_elem = self.children[0].br_elem
-            self.tipovi = self.children[0].tipovi
+            if not self.children[1].provjeri(): return False
+            self.br_elem = self.children[1].br_elem
+            self.tipovi = self.children[1].tipovi
         return True
 
 class Ime_tipa(Node):

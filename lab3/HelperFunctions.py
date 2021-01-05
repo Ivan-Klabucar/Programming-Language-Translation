@@ -29,6 +29,7 @@ def is_function(type):
     return False
 
 def tilda(type1, type2): # returns type1 ~ type2, needs implementing, has to support calls like tilda('int', 'T')
+    #print('{} ~ {}'.format(type1, type2))
     if type2 == 'T':
         return is_T(type1)
     if type2 == 'X':

@@ -181,4 +181,4 @@ if root.provjeri():
             print('funkcija')
     else:
         print('main')
-
+#print(get_defined_functions(root))

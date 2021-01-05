@@ -15,6 +15,10 @@ class TablicaZnakova:
         if key in self.tablica:
             return self.tablica[key]
         return default
+
+    def update(self, key, entry):
+        self.tablica[key] = entry
+        return True
     
     def idn_declared(self, idn):
         if idn in self.tablica:
