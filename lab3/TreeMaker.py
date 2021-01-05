@@ -29,18 +29,18 @@ def check_main(node):
     return False
 
 def get_defined_functions(root):
-    defined_functions = []
+    defined_functions = set()
     if root.isProduction('<vanjska_deklaracija>'):
         if root.children[0].isProduction('<definicija_funkcije>'):
             for znak in root.children[0].children[0].tablica_znakova.tablica.items():
                 if is_function(znak[1].tip) and znak[1].defined:
-                    defined_functions.append(znak[0])
-        elif root.isProduction('<prijevodna_jedinica> <vanjska_deklaracija>'):
-            defined_functions.extend(get_defined_functions(root.children[0]))
-            if root.children[1].isProduction('<definicija_funkcije>'):
-                for znak in root.children[1].children[0].tablica_znakova.tablica.items():
-                    if is_function(znak[1].tip) and znak[1].defined:
-                        defined_functions.append(znak[0])
+                    defined_functions.add(znak[0])
+    elif root.isProduction('<prijevodna_jedinica> <vanjska_deklaracija>'):
+        defined_functions.update(get_defined_functions(root.children[0]))
+        if root.children[1].isProduction('<definicija_funkcije>'):
+            for znak in root.children[1].children[0].tablica_znakova.tablica.items():
+                if is_function(znak[1].tip) and znak[1].defined:
+                    defined_functions.add(znak[0])
     return defined_functions
 
 
