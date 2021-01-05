@@ -102,7 +102,7 @@ class Postfiks_izraz(Node):
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA <lista_argumenata> D_ZAGRADA'):
             if not self.children[0].provjeri(): return False
             if not self.children[2].provjeri(): return False
-            if not (not is_param_void_func(self.children[0].tip) and self.children[2].tipovi == param_types(self.children[0].tip)):
+            if not (not is_param_void_func(self.children[0].tip) and len(self.children[2].tipovi) == len(param_types(self.children[0].tip)) and all([tilda(self.children[2].tipovi[x], param_types(self.children[0].tip)[x]) for x in range(len(self.children[2].tipovi))])):
                 self.error_in_production3()
                 return False
             self.tip = return_type(self.children[0].tip)
