@@ -166,7 +166,7 @@ class Izravni_deklarator(Node):
             self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=ntip, lizraz=lizraz))
             self.tip = ntip
         elif self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
-            if ntip == 'void' or self.children[0].ime in self.tablica_znakova.tablica or int(self.children[2].vrijednost) < 0 or int(self.children[2].vrijednost) > 1024:
+            if ntip == 'void' or self.children[0].ime in self.tablica_znakova.tablica or int(self.children[2].vrijednost) <= 0 or int(self.children[2].vrijednost) > 1024:
                 print("<izravni_deklarator> ::= IDN({},{}) L_UGL_ZAGRADA({},{}) BROJ({},{}) D_UGL_ZAGRADA({},{})".format(self.children[0].br_linije, self.children[0].ime, self.children[1].br_linije, self.children[1].val, self.children[2].br_linije, self.children[2].vrijednost, self.children[3].br_linije, self.children[3].val))
                 return False
             idn_type = "niz({})".format(ntip)
