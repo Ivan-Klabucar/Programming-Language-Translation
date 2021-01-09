@@ -182,3 +182,7 @@ if root.provjeri():
     else:
         print('main')
 #print(get_defined_functions(root))
+
+print("Konstante definirane u programu:\n")
+for x in const_init_list:
+    print(x)

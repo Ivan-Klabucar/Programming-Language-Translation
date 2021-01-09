@@ -1,0 +1,13 @@
+STO SE TICE FUNKCIJA:
+
+- Svaka funkcija kada dode do poslijednje naredbe 'RET' mora osigurati da se na vrhu stoga (da R7 pokazuje na) nalazi adresa naredbe za povratak koja je stavljena na vrh stoga prilikom naredbe CALL {trenutna_fja}
+
+- argumente za funkcije prenosimo stogom, dakle prije pozivanja fje na stog stavimo sve potrebne argumente, nakon sto funkcija zavrsi sa stoga trebamo skinuti sve argumente koje smo stavili
+
+- necemo raditi nikakvu obnovu konteksta -> lokalne varijale nikad ne cuvamo u registrima nego uvijek na stogu
+
+- nakon sto je funkcija pozvana ona na stog stavlja svoje lokalne varijable, koje mora skinuti na kraju izevedbe
+
+- kako se za obicne operacije poput zbrajanja i pridruzivanja koristi stog, R6 registar ce se tijekom izvodenja potprograma rezervirati za adresu koja predstavlja okvir funkcije, na temelju tog okvira ce se dohvacati lokalne var i parametri potprograma, takoder prije svake CALL naredbe (i prije stavljanja argumenata za tu call naredbu na stog) R6 se treba pohraniti na stog a nakon CALL fje obnoviti (obnoviti nakon skidanja argumenata potprograma s stoga)
+
+- u move naredbi mozemo [%D -524288, %D 524287] prikazat

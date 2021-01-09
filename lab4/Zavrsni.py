@@ -1,5 +1,12 @@
 from Node import Node
 
+global const_init_list
+global num
+
+const_init_list = []
+num = 0
+
+
 class IDN(Node):
     def __init__(self, data):
         super().__init__(data)
@@ -11,7 +18,15 @@ class BROJ(Node):
         super().__init__(data)
         self.vrijednost = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
-    
+        self.label = None
+
+        global const_init_list
+        global num
+        if self.is_valid():
+            self.label = f'CONST_{num}'
+            const_init_list.append(f'{self.label}  DW %D {self.vrijednost}')
+            num += 1
+
     def is_valid(self):
         if int(self.vrijednost) < -2147483648 or int(self.vrijednost) >  2147483647:
             return False
@@ -23,6 +38,14 @@ class ZNAK(Node):
         super().__init__(data)
         self.znak = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
+        self.label = None
+
+        global const_init_list
+        global num
+        if self.is_valid():
+            self.label = f'CONST_{num}'
+            const_init_list.append(f'{self.label}  DB %D {ord(self.znak[1:-1])}')
+            num += 1
     
     def is_valid(self):
         c = self.znak[1:-1]
@@ -39,6 +62,19 @@ class NIZ_ZNAKOVA(Node):
         super().__init__(data)
         self.string = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
+        self.label = None
+
+        global const_init_list
+        global num
+        if self.is_valid():
+            self.label = f'CONST_{num}'
+            num += 1
+            result = f'{self.label}   DB %D'
+            for c in self.string[1:-1]:
+                result += f' {ord(c)},'
+            terminator = '\0'
+            result += f' {ord(terminator)},'
+            const_init_list.append(result)
     
     def is_valid(self):
         s = self.string[1:-1]
