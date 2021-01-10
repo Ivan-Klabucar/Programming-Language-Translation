@@ -18,6 +18,23 @@ class Prijevodna_jedinica(Node):
             if not self.children[0].provjeri(): return False
             if not self.children[1].provjeri(): return False
         return True
+    
+    def generate(self):
+        result = ''
+        if self.parent == None: 
+            result = \
+        """
+        MOVE 40000, R7 
+        CALL F_MAIN 
+        HALT\n"""
+
+        if self.isProduction('<vanjska_deklaracija>'):
+            result += self.children[0].generate()
+        elif self.isProduction('<prijevodna_jedinica> <vanjska_deklaracija>'):
+            result += self.children[0].generate()
+            result += self.children[1].generate()
+
+        return result
 
 class Primarni_izraz(Node):
     def __init__(self, data):
@@ -74,6 +91,14 @@ class Vanjska_deklaracija(Node):
             if not self.children[0].provjeri(): return False
         
         return True
+    
+    def generate(self):
+        result = ''
+        if self.isProduction('<definicija_funkcije>'):
+            result += self.children[0].generate()
+        elif self.isProduction('<deklaracija>'):
+            result += self.children[0].generate(outer=True)
+        return result
 
 class Deklaracija(Node):
     def __init__(self, data):
@@ -86,6 +111,11 @@ class Deklaracija(Node):
             if not self.children[0].provjeri(): return False
             if not self.children[1].provjeri(ntip=self.children[0].tip): return False
         return True
+    
+    def generate(self, outer=False):
+        return self.children[1].generate(outer=outer)
+
+
 
 class Lista_init_deklaratora(Node):
     def __init__(self, data):
@@ -100,6 +130,14 @@ class Lista_init_deklaratora(Node):
             if not self.children[0].provjeri(ntip=ntip): return False
             if not self.children[2].provjeri(ntip=ntip): return False
         return True
+    
+    def generate(self, outer=False):
+        if self.isProduction('<init_deklarator>'):
+            return self.children[0].generate(outer=outer)
+        elif self.isProduction('<lista_init_deklaratora> ZAREZ <init_deklarator>'):
+            result = self.children[0].generate(outer=outer)
+            result += self.children[2].generate(outer=outer)
+            return result
 
 class Init_deklarator(Node):
     def __init__(self, data):
@@ -146,6 +184,24 @@ class Init_deklarator(Node):
                     return False
         
         return True
+    
+    def generate(self, outer=False):
+        if outer:
+            if self.isProduction('<izravni_deklarator>'):
+                result = self.children[0].generate(outer=outer)
+                if is_X(self.children[0].tip):
+                    result += ' DW %D 0\n'
+                elif is_seq(self.children[0].tip):
+                    result += ' DW %D'
+                    for i in range(self.children[0].br_elem):
+                        result += ' 0,'
+                    result += '\n'
+                return result
+            elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
+                result = self.children[0].generate(outer=outer)
+                result += ' DW %D '
+                result += self.children[2].generate(outer=outer) + '\n'
+                return result
 
 
 class Izravni_deklarator(Node):
@@ -188,6 +244,15 @@ class Izravni_deklarator(Node):
                 return False
             if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
+    
+    def generate(self, outer=False):
+        if outer:
+            if self.isProduction('IDN') or self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
+                result = f'G_{self.children[0].ime}'
+                self.tablica_znakova.get(self.children[0].ime).label = result
+                return result
+            else:
+                return ''
 
 class Inicijalizator(Node):
     def __init__(self, data):
@@ -203,7 +268,7 @@ class Inicijalizator(Node):
             if not self.children[0].provjeri(): return False
             izraz_pridruzivanja_zavrsni = self.children[0].get_zavrsni()
             if len(izraz_pridruzivanja_zavrsni) == 1 and izraz_pridruzivanja_zavrsni[0].name == 'NIZ_ZNAKOVA':
-                self.br_elem = len(izraz_pridruzivanja_zavrsni[0].string) - 2 + 1  # -2 zbog navodnika + 1 zbog '\0'
+                self.br_elem = len(izraz_pridruzivanja_zavrsni[0].true_string) + 1 # + 1 zbog '\0'
                 self.tipovi = ['char'] * self.br_elem
             else:
                 self.tip = self.children[0].tip
@@ -212,6 +277,13 @@ class Inicijalizator(Node):
             self.br_elem = self.children[1].br_elem
             self.tipovi = self.children[1].tipovi
         return True
+
+    def generate(self, outer=False):
+        if outer:
+            if self.isProduction('<izraz_pridruzivanja>'):
+                return self.children[0].generate(outer=outer)
+            elif self.isProduction('L_VIT_ZAGRADA <lista_izraza_pridruzivanja> D_VIT_ZAGRADA'):
+                return self.children[1].generate(outer=outer)
 
 class Ime_tipa(Node):
     def __init__(self, data):

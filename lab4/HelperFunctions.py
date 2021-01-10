@@ -1,4 +1,5 @@
 def is_const(type): # Samo je li vanjski const
+    if not type: return False
     retb = False
     retv = None
     elems = type.split('(')
@@ -8,12 +9,15 @@ def is_const(type): # Samo je li vanjski const
     return retb, retv
 
 def is_T(type):
+    if not type: return False
     return type in ['int','char']
 
 def is_X(type):
+    if not type: return False
     return is_T(type) or is_T(is_const(type)[1])
 
 def is_seq(type):
+    if not type: return False
     retb = False
     retv = None
     elems = type.split('(')
@@ -23,6 +27,7 @@ def is_seq(type):
     return retb, retv
 
 def is_function(type):
+    if not type: return False
     elems = type.split('(')
     if elems[0] == 'funkcija':
         return True

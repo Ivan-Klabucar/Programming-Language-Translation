@@ -43,3 +43,4 @@ class TabZnakEntry:
         self.tip = tip          # npr. 'int' ili 'char'
         self.lizraz = lizraz
         self.defined = defined
+        self.label = None

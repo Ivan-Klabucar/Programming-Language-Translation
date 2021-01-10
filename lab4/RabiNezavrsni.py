@@ -27,6 +27,20 @@ class Izraz_pridruzivanja(Node):
             self.tip = self.children[0].tip
             self.lizraz = False
         return True
+    
+    def generate(self, outer=False):
+        if outer:
+            curr = self.children[0]
+            while curr.children:
+                curr = curr.children[0]
+            if curr.name == "BROJ":
+                return str(curr.vrijednost)
+            elif curr.name == "ZNAK":
+                return str(ord(curr.char))
+            elif curr.name == "NIZ_ZNAKOVA":
+                return curr.get_ords_with_commas()
+            else:
+                raise f"Somethin went wrong with global initialization in line: {curr.br_linije}"
 
 class Izraz(Node):
     def __init__(self, data):
@@ -510,6 +524,9 @@ class Definicija_funkcije(Node):
             #print('Defined {}:{}'.format(self.children[1].ime, 'funkcija(void -> {})'.format(self.children[0].tip)))
             if not self.children[5].provjeri(imena=self.children[3].imena, tipovi=self.children[3].tipovi): return False                #Not rly sure kaj se od mene trazi tu, nije mijasan tekst tog uvjeta
         return True
+    
+    def generate(self):
+        return ''
 
 
 class Lista_parametara(Node):
@@ -596,3 +613,10 @@ class Lista_izraza_pridruzivanja(Node):
             self.tipovi.append(self.children[2].tip)
             self.br_elem = self.children[0].br_elem + 1
         return True
+    
+    def generate(self, outer=False):
+        if outer:
+            if self.isProduction('<izraz_pridruzivanja>'):
+                return self.children[0].generate(outer=outer)
+            elif self.isProduction('<lista_izraza_pridruzivanja> ZAREZ <izraz_pridruzivanja>'):
+                return self.children[0].generate(outer=outer) + ', ' + self.children[2].generate(outer=outer)

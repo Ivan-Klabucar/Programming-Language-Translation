@@ -183,6 +183,8 @@ if root.provjeri():
         print('main')
 #print(get_defined_functions(root))
 
-print("Konstante definirane u programu:\n")
+print("Program:\n")
+print(root.generate())
 for x in const_init_list:
     print(x)
+

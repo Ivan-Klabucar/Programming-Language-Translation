@@ -6,6 +6,20 @@ global num
 const_init_list = []
 num = 0
 
+def to_special(c):
+    if c == 'n':
+        return '\n'
+    elif c == 't':
+        return '\t'
+    elif c == '0':
+        return '\0'
+    elif c == '\\':
+        return '\\'
+    elif c == '\'':
+        return '\''
+    elif c == '"':
+        return '"'
+
 
 class IDN(Node):
     def __init__(self, data):
@@ -39,22 +53,26 @@ class ZNAK(Node):
         self.znak = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
         self.label = None
+        self.char = self.znak[1:-1]
 
         global const_init_list
         global num
         if self.is_valid():
             self.label = f'CONST_{num}'
-            const_init_list.append(f'{self.label}  DW %D {ord(self.znak[1:-1])}')
+            const_init_list.append(f'{self.label}  DW %D {ord(self.char)}')
             num += 1
     
     def is_valid(self):
-        c = self.znak[1:-1]
+        c = self.char
         if len(c) == 0: return False
         if len(c) == 1 and c[0] != '\\': return True
         if len(c) == 1 and c[0] == '\\': return False
         if len(c) > 2: return False
         if len(c) > 1 and c[0] != '\\': return False
-        if c[0] == '\\' and c[1] not in ['t', 'n', '0', '\\', '\'', '"']: return False
+        if c[0] == '\\' and c[1] not in ['t', 'n', '0', '\\', '\'', '"']: 
+            return False
+        else:
+            self.char = to_special(c[1])
         return True
 
 class NIZ_ZNAKOVA(Node):
@@ -63,6 +81,8 @@ class NIZ_ZNAKOVA(Node):
         self.string = data.split(' ')[2]
         self.br_linije = data.split(' ')[1]
         self.label = None
+        self.str = self.string[1:-1]
+        self.true_string = None
 
         global const_init_list
         global num
@@ -70,25 +90,38 @@ class NIZ_ZNAKOVA(Node):
             self.label = f'CONST_{num}'
             num += 1
             result = f'{self.label}   DW %D'
-            for c in self.string[1:-1]:
-                result += f' {ord(c)},'
-            terminator = '\0'
-            result += f' {ord(terminator)},'
+            result += self.get_ords_with_commas()
             const_init_list.append(result)
     
     def is_valid(self):
-        s = self.string[1:-1]
+        s = self.str
         i = 0
         escaped = False
+        true_string = ''
         while i < len(s):
             if escaped:
-                if s[i] not in ['t', 'n', '0', '\\', '\'', '"']: return False
+                if s[i] not in ['t', 'n', '0', '\\', '\'', '"']: 
+                    return False
+                else:
+                    true_string += to_special(s[i])
                 escaped = False
             else:
-                if s[i] == '\\': escaped = True
+                if s[i] == '\\': 
+                    escaped = True
+                else:
+                    true_string += s[i]
             i += 1
         if escaped: return False
+        self.true_string = true_string
         return True
+    
+    def get_ords_with_commas(self):
+        result = ''
+        for c in self.true_string:
+                result += f' {ord(c)},'
+        terminator = '\0'
+        result += f' {ord(terminator)},'
+        return result
 
 class SimpleZavrsni(Node):
     def __init__(self, data):
