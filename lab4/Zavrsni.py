@@ -44,7 +44,7 @@ class ZNAK(Node):
         global num
         if self.is_valid():
             self.label = f'CONST_{num}'
-            const_init_list.append(f'{self.label}  DB %D {ord(self.znak[1:-1])}')
+            const_init_list.append(f'{self.label}  DW %D {ord(self.znak[1:-1])}')
             num += 1
     
     def is_valid(self):
@@ -69,7 +69,7 @@ class NIZ_ZNAKOVA(Node):
         if self.is_valid():
             self.label = f'CONST_{num}'
             num += 1
-            result = f'{self.label}   DB %D'
+            result = f'{self.label}   DW %D'
             for c in self.string[1:-1]:
                 result += f' {ord(c)},'
             terminator = '\0'
