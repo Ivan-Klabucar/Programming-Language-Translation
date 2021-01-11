@@ -2,6 +2,10 @@ from Node import Node
 from TablicaZnakova import TablicaZnakova, TabZnakEntry
 from HelperFunctions import *
 
+global loop_num
+
+loop_num = 0
+
 class Prijevodna_jedinica(Node):
     def __init__(self, data):
         super().__init__(data)
@@ -141,7 +145,7 @@ class Primarni_izraz(Node):
             PUSH R0\n"""
             return result
         elif self.isProduction('NIZ_ZNAKOVA'):
-r           esult = f"""\
+            result = f"""\
             MOVE {self.children[0].label}, R0
             PUSH R0\n"""
             return result
@@ -203,12 +207,13 @@ class Lista_init_deklaratora(Node):
             if not self.children[2].provjeri(ntip=ntip): return False
         return True
     
-    def generate(self, outer=False, odmak=odmak):
+    def generate(self, odmak, outer=False):
         if self.isProduction('<init_deklarator>'):
             return self.children[0].generate(outer=outer, odmak=odmak)
         elif self.isProduction('<lista_init_deklaratora> ZAREZ <init_deklarator>'):
             result, odmak = self.children[0].generate(outer=outer, odmak=odmak)
-            tmp1, odmak += self.children[2].generate(outer=outer, odmak=odmak)
+            tmp1, odmakt = self.children[2].generate(outer=outer, odmak=odmak)  # FIX bacalo error, quick and dirty fix
+            odmak += odmakt
             result += tmp1
             return result, odmak
 
@@ -288,7 +293,7 @@ class Init_deklarator(Node):
                 else:
                     result = """
             SUB R7, 4, R7\n"""
-                    return result 
+                    return result, 0 # FIX too many values to unpack
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 if self.children[0].br_elem:
                     pomak = 4 * self.children[0].br_elem
@@ -580,7 +585,7 @@ class Slozena_naredba(Node):
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
             result += self.children[1].generate()
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
-            result += self.children[1].generate(odmak=-4)
+            result += self.children[1].generate(odmak=-4)[0]
             result += self.children[2].generate()
         
         result += """
@@ -608,7 +613,14 @@ class Lista_naredbi(Node): # TREBA IMPLEMENTIRAT
         return True
     
     def generate(self):
-        return ''
+        #TREBA IMPLEMENTIRATI SVE
+        result = ''
+        if self.isProduction('<naredba>'):
+            result += self.children[0].generate()
+        elif self.isProduction('<lista_naredbi> <naredba>'):
+            result += self.children[0].generate()
+            result += self.children[1].generate()
+        return result
 
 class Lista_deklaracija(Node):
     def __init__(self, data):
@@ -637,7 +649,7 @@ class Lista_deklaracija(Node):
             result += tmp1
             tmp2, odmak = self.children[1].generate(odmak=odmak)
             result += tmp2
-        return result
+        return result, None # FIX too many values to unpack, quick and dirty
 
 class Naredba(Node):
     def __init__(self, data):
@@ -655,6 +667,13 @@ class Naredba(Node):
             if not self.children[0].provjeri(): return False
         return True
 
+    def generate(self):
+        # TREBA IMPLEMENTIRATI SVE
+        if self.isProduction('<naredba_petlje>'):
+            return self.children[0].generate()
+        else:
+            return ''
+
 class Izraz_naredba(Node):
     def __init__(self, data):
         super().__init__(data)
@@ -669,6 +688,15 @@ class Izraz_naredba(Node):
             if not self.children[0].provjeri(): return False
             self.tip = self.children[0].tip
         return True
+
+    def generate(self):
+        if self.isProduction('TOCKAZAREZ'):
+            return ''
+        elif self.isProduction('<izraz> TOCKAZAREZ'):
+            result = self.children[0].generate()
+            result += """\
+            ADD R7, 4, R7\n"""
+            return result
 
 class Naredba_grananja(Node):
     def __init__(self, data):
@@ -735,6 +763,53 @@ class Naredba_petlje(Node):
             if not self.children[4].provjeri(): return False
             if not self.children[6].provjeri(): return False
         return True
+
+    def generate(self):
+        global loop_num
+        result = ''
+        local_num = loop_num
+        loop_num += 1
+
+        if self.isProduction('KR_WHILE L_ZAGRADA <izraz> D_ZAGRADA <naredba>'):
+            result += f"""WHILE_{local_num} \n"""
+            result += self.children[2].generate()
+            result += f"""\
+             POP R0
+             CMP R0, 0
+             JR_EQ ENDWHILE_{local_num}\n"""
+            result += self.children[4].generate()
+            result += f"""\
+             JR WHILE_{local_num}
+ENDWHILE_{local_num}\n"""
+        elif self.isProduction('KR_FOR L_ZAGRADA <izraz_naredba> <izraz_naredba> D_ZAGRADA <naredba>'):
+            result += self.children[2].generate()
+            result += f"""FOR_{local_num} \n"""
+            if self.children[3].isProduction('<izraz> TOCKAZAREZ'):
+                result += self.children[3].children[0].generate()
+                result += f"""\
+                 POP R0
+                 CMP R0, 0
+                 JR_EQ ENDFOR_{local_num}\n"""
+            result += self.children[5].generate()
+            result += f"""\
+             JR FOR_{local_num}
+ENDFOR_{local_num}\n"""
+        elif self.isProduction('KR_FOR L_ZAGRADA <izraz_naredba> <izraz_naredba> <izraz> D_ZAGRADA <naredba>'):
+            result += self.children[2].generate()
+            result += f"""FOR_{local_num} \n"""
+            if self.children[3].isProduction('<izraz> TOCKAZAREZ'):
+                result += self.children[3].children[0].generate()
+                result += f"""\
+            POP R0
+            CMP R0, 0
+            JR_EQ ENDFOR_{local_num}\n"""
+            result += self.children[6].generate()
+            result += self.children[4].generate()
+            result += f"""\
+            JR FOR_{local_num}
+ENDFOR_{local_num}\n"""
+
+        return result
 
 class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
     def __init__(self, data):

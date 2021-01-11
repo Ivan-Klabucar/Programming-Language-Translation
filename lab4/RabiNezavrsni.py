@@ -40,7 +40,7 @@ class Izraz_pridruzivanja(Node):
             elif curr.name == "NIZ_ZNAKOVA":
                 return curr.get_ords_with_commas()
             else:
-                raise f"Somethin went wrong with global initialization in line: {curr.br_linije}"
+                raise Exception(f"Somethin went wrong with global initialization in line: {curr.br_linije}") # FIX exception, ne string
         else:
             if self.isProduction('<log_ili_izraz>'):
                 return self.children[0].generate()
@@ -66,6 +66,10 @@ class Izraz(Node):
             self.tip = self.children[2].tip
             self.lizraz = False
         return True
+
+    def generate(self):
+        # TREBA IMPLEMENTIRATI SVE
+        return ''
 
 class Postfiks_izraz(Node):
     def __init__(self, data):
@@ -544,12 +548,12 @@ class Aditivni_izraz(Node):
         return True
     
     def generate(self):
-    if self.isProduction('<multiplikativni_izraz>'):
-        return self.children[0].generate()
-    elif self.isProduction('<aditivni_izraz> PLUS <multiplikativni_izraz>'):
-        return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
-    elif self.isProduction('<aditivni_izraz> MINUS <multiplikativni_izraz>'):
-        return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
+        if self.isProduction('<multiplikativni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<aditivni_izraz> PLUS <multiplikativni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
+        elif self.isProduction('<aditivni_izraz> MINUS <multiplikativni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
 
 
 class Definicija_funkcije(Node):
@@ -605,7 +609,7 @@ class Definicija_funkcije(Node):
     def generate(self):
         result = f'F_{self.children[1].ime}'
         imena = None
-        if self.children[3].imena: imena = self.children[3].imena
+        if not self.isProduction('<ime_tipa> IDN L_ZAGRADA KR_VOID D_ZAGRADA <slozena_naredba>') and self.children[3].imena: imena = self.children[3].imena  # FIX za void funkcije bacalo error
         result += self.children[5].generate(imena=imena)
         return result
 
