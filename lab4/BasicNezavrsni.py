@@ -184,8 +184,8 @@ class Deklaracija(Node):
             if not self.children[1].provjeri(ntip=self.children[0].tip): return False
         return True
     
-    def generate(self, outer=False):
-        return self.children[1].generate(outer=outer)
+    def generate(self, outer=False, odmak=None):
+        return self.children[1].generate(outer=outer, odmak=odmak)
 
 
 
@@ -203,13 +203,14 @@ class Lista_init_deklaratora(Node):
             if not self.children[2].provjeri(ntip=ntip): return False
         return True
     
-    def generate(self, outer=False):
+    def generate(self, outer=False, odmak=odmak):
         if self.isProduction('<init_deklarator>'):
-            return self.children[0].generate(outer=outer)
+            return self.children[0].generate(outer=outer, odmak=odmak)
         elif self.isProduction('<lista_init_deklaratora> ZAREZ <init_deklarator>'):
-            result = self.children[0].generate(outer=outer)
-            result += self.children[2].generate(outer=outer)
-            return result
+            result, odmak = self.children[0].generate(outer=outer, odmak=odmak)
+            tmp1, odmak += self.children[2].generate(outer=outer, odmak=odmak)
+            result += tmp1
+            return result, odmak
 
 class Init_deklarator(Node):
     def __init__(self, data):
@@ -257,7 +258,7 @@ class Init_deklarator(Node):
         
         return True
     
-    def generate(self, outer=False):
+    def generate(self, outer=False, odmak=False):
         if outer:
             if self.isProduction('<izravni_deklarator>'):
                 result = self.children[0].generate(outer=outer)
@@ -278,14 +279,23 @@ class Init_deklarator(Node):
             if self.isProduction('<izravni_deklarator>'):
                 if self.children[0].br_elem:
                     pomak = 4 * self.children[0].br_elem
+                    odmak = odmak - pomak + 4
+                    self.children[0].generate(odmak=odmak)
+                    odmak -= 4
                     result = f"""
             SUB R7, %D {pomak}, R7\n"""
-                    return result
+                    return result, odmak
                 else:
                     result = """
             SUB R7, 4, R7\n"""
                     return result 
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
+                if self.children[0].br_elem:
+                    pomak = 4 * self.children[0].br_elem
+                    odmak = odmak - pomak + 4
+                self.children[0].generate(odmak=odmak)
+                odmak -= 4
+                return self.children[2].generate(), odmak
 
 
 
@@ -330,14 +340,15 @@ class Izravni_deklarator(Node):
             if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
     
-    def generate(self, outer=False):
-        if outer:
-            if self.isProduction('IDN') or self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
-                result = f'G_{self.children[0].ime}'
-                self.tablica_znakova.get(self.children[0].ime).label = result
-                return result
-            else:
-                return ''
+    def generate(self, outer=False, odmak=None):
+        if self.isProduction('IDN') or self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
+            result = f'G_{self.children[0].ime}'
+            entry = self.tablica_znakova.get(self.children[0].ime)
+            entry.label = result
+            if not outer and odmak != None: entry.odmak = odmak
+            return result
+        else:
+            return ''
 
 class Inicijalizator(Node):
     def __init__(self, data):
@@ -555,7 +566,13 @@ class Slozena_naredba(Node):
             if not self.children[2].provjeri(new_tablica=self.tablica_znakova): return False
         return True
     
-    def generate(self):
+    def generate(self, imena=None):
+        if imena:
+            i = 2
+            for ime in imena.reverse():
+                self.tablica_znakova.get(ime).odmak = i * 4
+                i += 1
+
         result = """
         PUSH R5
         MOVE R7, R5\n"""
@@ -563,7 +580,7 @@ class Slozena_naredba(Node):
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
             result += self.children[1].generate()
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
-            result += self.children[1].generate()
+            result += self.children[1].generate(odmak=-4)
             result += self.children[2].generate()
         
         result += """
@@ -573,7 +590,7 @@ class Slozena_naredba(Node):
         return result
 
 
-class Lista_naredbi(Node):
+class Lista_naredbi(Node): # TREBA IMPLEMENTIRAT
     def __init__(self, data):
         super().__init__(data)
 
@@ -589,6 +606,9 @@ class Lista_naredbi(Node):
             if not self.children[0].provjeri(): return False
             if not self.children[1].provjeri(): return False
         return True
+    
+    def generate(self):
+        return ''
 
 class Lista_deklaracija(Node):
     def __init__(self, data):
@@ -607,13 +627,16 @@ class Lista_deklaracija(Node):
             if not self.children[1].provjeri(): return False
         return True
     
-    def generate(self):
+    def generate(self, odmak=None):
         result = ''
         if self.isProduction('<deklaracija>'):
-            result += self.children[0].generate()
+            result_str, odmak = self.children[0].generate(odmak=odmak)
+            result += result_str
         elif self.isProduction('<lista_deklaracija> <deklaracija>'):
-            result += self.children[0].generate()
-            result += self.children[1].generate()
+            tmp1, odmak = self.children[0].generate(odmak=odmak)
+            result += tmp1
+            tmp2, odmak = self.children[1].generate(odmak=odmak)
+            result += tmp2
         return result
 
 class Naredba(Node):

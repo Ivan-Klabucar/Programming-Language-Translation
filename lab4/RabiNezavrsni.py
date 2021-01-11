@@ -42,9 +42,9 @@ class Izraz_pridruzivanja(Node):
             else:
                 raise f"Somethin went wrong with global initialization in line: {curr.br_linije}"
         else:
-            if self.isProduction('<log_ili_izraz>'):  # samo je ova relevantna za pridruzivanje na pocetku blokova
+            if self.isProduction('<log_ili_izraz>'):
                 return self.children[0].generate()
-            elif self.isProduction('<postfiks_izraz> OP_PRIDRUZI <izraz_pridruzivanja>'): # ovo sad necu implementirat jer se sad bavim samo s pocetkom blokova ne i tijelom
+            elif self.isProduction('<postfiks_izraz> OP_PRIDRUZI <izraz_pridruzivanja>'): # ovim se jos ne bi bavio
                 return 'TREBA IMPLEMENTIRAT DO KRAJA Izraz_pridruzivanja'
 
 class Izraz(Node):
@@ -603,8 +603,10 @@ class Definicija_funkcije(Node):
         return True
     
     def generate(self):
-        result = f'F_{self.children[2].ime}'
-        result += self.children[5].generate()
+        result = f'F_{self.children[1].ime}'
+        imena = None
+        if self.children[3].imena: imena = self.children[3].imena
+        result += self.children[5].generate(imena=imena)
         return result
 
 
@@ -700,3 +702,8 @@ class Lista_izraza_pridruzivanja(Node):
                 return self.children[0].generate(outer=outer)
             elif self.isProduction('<lista_izraza_pridruzivanja> ZAREZ <izraz_pridruzivanja>'):
                 return self.children[0].generate(outer=outer) + ', ' + self.children[2].generate(outer=outer)
+        else:
+            if self.isProduction('<izraz_pridruzivanja>'):
+                return self.children[0].generate(outer=outer)
+            elif self.isProduction('<lista_izraza_pridruzivanja> ZAREZ <izraz_pridruzivanja>'):
+                return self.children[2].generate(outer=outer) + self.children[0].generate(outer=outer) # ovo je namjerno stavljeno u obrnuti redosljed tako da prvi clan niza bude na manjoj adresi
