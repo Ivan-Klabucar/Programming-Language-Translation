@@ -15,11 +15,11 @@
 <slozena_naredba>               ?
 <lista_naredbi>                 0
 <lista_deklaracija>             0
-<naredba>                       0
-<izraz_naredba>                 0
-<naredba_grananja>              0
+<naredba>                       1
+<izraz_naredba>                 1
+<naredba_grananja>              1
 <naredba_petlje>                1
-<nareba_skoka>                  0
+<nareba_skoka>                  1
 <izraz_pridruzivanja>           0
 <izraz>                         0
 <postfiks_izraz>                0
