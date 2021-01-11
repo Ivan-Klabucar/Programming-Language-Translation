@@ -35,6 +35,16 @@ class TablicaZnakova:
             return self.parent.function_defined(idn)
 
         return False
+    
+    def get_idn_and_other_info(self, key):
+        level = 0
+        is_global = False
+        curr_tablica_znakova = self
+        while key not in curr_tablica_znakova.tablica:
+            curr_tablica_znakova = curr_tablica_znakova.parent
+            level += 1
+        if curr_tablica_znakova.parent == None: is_global = True
+        return curr_tablica_znakova.tablica[key], level, is_global
         
     
 # Po potrebi u ovu klasu dodavat razne atribute koji su potrebni

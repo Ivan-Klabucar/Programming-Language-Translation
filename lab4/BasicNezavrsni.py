@@ -76,6 +76,18 @@ class Primarni_izraz(Node):
             self.tip = self.children[1].tip
             self.lizraz = self.children[1].lizraz
         return True
+    
+    def generate(self):
+        if self.isProduction('IDN'):
+            idn_entry = self.tablica_znakova.get_idn_and_other_info(self.children[0].ime)
+        elif self.isProduction('BROJ'):
+
+        elif self.isProduction('ZNAK'):
+
+        elif self.isProduction('NIZ_ZNAKOVA'):
+
+        elif self.isProduction('L_ZAGRADA <izraz> D_ZAGRADA'):
+
 
 
 class Vanjska_deklaracija(Node):
@@ -202,6 +214,19 @@ class Init_deklarator(Node):
                 result += ' DW %D '
                 result += self.children[2].generate(outer=outer) + '\n'
                 return result
+        else:
+            if self.isProduction('<izravni_deklarator>'):
+                if self.children[0].br_elem:
+                    pomak = 4 * self.children[0].br_elem
+                    result = f"""
+            SUB R7, %D {pomak}, R7\n"""
+                    return result
+                else:
+                    result = """
+            SUB R7, 4, R7\n"""
+                    return result 
+            elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
+
 
 
 class Izravni_deklarator(Node):
@@ -346,6 +371,12 @@ class Cast_izraz(Node):
             self.tip = self.children[1].tip
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<unarni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('L_ZAGRADA <ime_tipa> D_ZAGRADA <cast_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Cast_izraz'
 
 class Unarni_izraz(Node):
     def __init__(self, data):
@@ -383,6 +414,16 @@ class Unarni_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<postfiks_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('OP_INC <unarni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
+        elif self.isProduction('OP_DEC <unarni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
+        elif self.isProduction('<unarni_operator> <cast_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
 
 class Unarni_operator(Node):
     def __init__(self, data):
@@ -423,6 +464,16 @@ class Multiplikativni_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<cast_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
+        elif self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
+        elif self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
 
 class Slozena_naredba(Node):
     def __init__(self, data):
@@ -443,6 +494,24 @@ class Slozena_naredba(Node):
             if not self.children[1].provjeri(new_tablica=self.tablica_znakova): return False
             if not self.children[2].provjeri(new_tablica=self.tablica_znakova): return False
         return True
+    
+    def generate(self):
+        result = """
+        PUSH R5
+        MOVE R7, R5\n"""
+
+        if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
+            result += self.children[1].generate()
+        elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
+            result += self.children[1].generate()
+            result += self.children[2].generate()
+        
+        result += """
+        MOVE R5, R7
+        POP  R5\n"""
+
+        return result
+
 
 class Lista_naredbi(Node):
     def __init__(self, data):
@@ -477,6 +546,15 @@ class Lista_deklaracija(Node):
             if not self.children[0].provjeri(): return False
             if not self.children[1].provjeri(): return False
         return True
+    
+    def generate(self):
+        result = ''
+        if self.isProduction('<deklaracija>'):
+            result += self.children[0].generate()
+        elif self.isProduction('<lista_deklaracija> <deklaracija>'):
+            result += self.children[0].generate()
+            result += self.children[1].generate()
+        return result
 
 class Naredba(Node):
     def __init__(self, data):

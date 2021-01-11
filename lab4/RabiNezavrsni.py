@@ -41,6 +41,11 @@ class Izraz_pridruzivanja(Node):
                 return curr.get_ords_with_commas()
             else:
                 raise f"Somethin went wrong with global initialization in line: {curr.br_linije}"
+        else:
+            if self.isProduction('<log_ili_izraz>'):  # samo je ova relevantna za pridruzivanje na pocetku blokova
+                return self.children[0].generate()
+            elif self.isProduction('<postfiks_izraz> OP_PRIDRUZI <izraz_pridruzivanja>'): # ovo sad necu implementirat jer se sad bavim samo s pocetkom blokova ne i tijelom
+                return 'TREBA IMPLEMENTIRAT DO KRAJA Izraz_pridruzivanja'
 
 class Izraz(Node):
     def __init__(self, data):
@@ -136,6 +141,20 @@ class Postfiks_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<primarni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<postfiks_izraz> L_UGL_ZAGRADA <izraz> D_UGL_ZAGRADA'):
+            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+        elif self.isProduction('<postfiks_izraz> L_ZAGRADA D_ZAGRADA'):
+            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+        elif self.isProduction('<postfiks_izraz> L_ZAGRADA <lista_argumenata> D_ZAGRADA'):
+            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+        elif self.isProduction('<postfiks_izraz> OP_INC'):
+            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+        elif self.isProduction('<postfiks_izraz> OP_DEC'):
+            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
 
 class Lista_argumenata(Node):
     def __init__(self, data):
@@ -185,6 +204,12 @@ class Log_ili_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<log_i_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<log_ili_izraz> OP_ILI <log_i_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Log_ili_izraz'
 
 class Log_i_izraz(Node):
     def __init__(self, data):
@@ -215,6 +240,12 @@ class Log_i_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<bin_ili_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<log_i_izraz> OP_I <bin_ili_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Log_i_izraz'
 
 
 class Bin_ili_izraz(Node):
@@ -246,6 +277,12 @@ class Bin_ili_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<bin_xili_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<bin_ili_izraz> OP_BIN_ILI <bin_xili_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Bin_ili_izraz'
 
 
 class Bin_xili_izraz(Node):
@@ -277,6 +314,12 @@ class Bin_xili_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<bin_i_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<bin_xili_izraz> OP_BIN_XILI <bin_i_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Bin_xili_izraz'
 
 class Bin_i_izraz(Node):
     def __init__(self, data):
@@ -307,6 +350,12 @@ class Bin_i_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<jednakosni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<bin_i_izraz> OP_BIN_I <jednakosni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Bin_i_izraz'
 
 class Jednakosni_izraz(Node):
     def __init__(self, data):
@@ -352,6 +401,14 @@ class Jednakosni_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<odnosni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<jednakosni_izraz> OP_EQ <odnosni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Jednakosni_izraz'
+        elif self.isProduction('<jednakosni_izraz> OP_NEQ<odnosni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Jednakosni_izraz'
 
 
 class Odnosni_izraz(Node):
@@ -428,6 +485,18 @@ class Odnosni_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+        if self.isProduction('<aditivni_izraz>'):
+            return self.children[0].generate()
+        elif self.isProduction('<odnosni_izraz> OP_LT <aditivni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+        elif self.isProduction('<odnosni_izraz> OP_GT <aditivni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+        elif self.isProduction('<odnosni_izraz> OP_LTE <aditivni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+        elif self.isProduction('<odnosni_izraz> OP_GTE <aditivni_izraz>'):
+            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
 
 class Aditivni_izraz(Node):
     def __init__(self, data):
@@ -473,6 +542,14 @@ class Aditivni_izraz(Node):
             self.tip = 'int'
             self.lizraz = False
         return True
+    
+    def generate(self):
+    if self.isProduction('<multiplikativni_izraz>'):
+        return self.children[0].generate()
+    elif self.isProduction('<aditivni_izraz> PLUS <multiplikativni_izraz>'):
+        return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
+    elif self.isProduction('<aditivni_izraz> MINUS <multiplikativni_izraz>'):
+        return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
 
 
 class Definicija_funkcije(Node):
@@ -526,7 +603,10 @@ class Definicija_funkcije(Node):
         return True
     
     def generate(self):
-        return ''
+        result = f'F_{self.children[2].ime}'
+        result += self.children[5].generate()
+        return result
+
 
 
 class Lista_parametara(Node):
