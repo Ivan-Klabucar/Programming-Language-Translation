@@ -597,7 +597,7 @@ class Slozena_naredba(Node):
         return result
 
 
-class Lista_naredbi(Node): # TREBA IMPLEMENTIRAT
+class Lista_naredbi(Node):
     def __init__(self, data):
         super().__init__(data)
 
@@ -615,7 +615,6 @@ class Lista_naredbi(Node): # TREBA IMPLEMENTIRAT
         return True
     
     def generate(self, num = -1):
-        #TREBA IMPLEMENTIRATI SVE
         result = ''
         if self.isProduction('<naredba>'):
             result += self.children[0].generate(num)

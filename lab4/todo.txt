@@ -12,8 +12,8 @@
 <unarni_izraz>                  0
 <unarni_operator>               0
 <multiplikativni_izraz>         0
-<slozena_naredba>               ?
-<lista_naredbi>                 0
+<slozena_naredba>               1
+<lista_naredbi>                 1
 <lista_deklaracija>             0
 <naredba>                       1
 <izraz_naredba>                 1
