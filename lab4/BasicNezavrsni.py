@@ -3,8 +3,10 @@ from TablicaZnakova import TablicaZnakova, TabZnakEntry
 from HelperFunctions import *
 
 global loop_num
+global cond_num
 
 loop_num = 0
+cond_num = 0
 
 class Prijevodna_jedinica(Node):
     def __init__(self, data):
@@ -671,8 +673,10 @@ class Naredba(Node):
         # TREBA IMPLEMENTIRATI SVE
         if self.isProduction('<naredba_petlje>'):
             return self.children[0].generate()
+        elif self.isProduction('<naredba_grananja>'):
+            return self.children[0].generate()
         else:
-            return ''
+            return 'TREBA IMPLEMENTIRATI NAREDBA'
 
 class Izraz_naredba(Node):
     def __init__(self, data):
@@ -721,6 +725,38 @@ class Naredba_grananja(Node):
             if not self.children[4].provjeri(): return False
             if not self.children[6].provjeri(): return False
         return True
+
+    def generate(self):
+        global cond_num
+        result = ''
+        local_num = cond_num
+        cond_num += 1
+
+        result = ''
+        if self.isProduction('KR_IF L_ZAGRADA <izraz> D_ZAGRADA <naredba>'):
+            result += f"""IF_{local_num}\n"""
+            result += self.children[2].generate()
+            result += f"""\
+        POP R0
+        CMP R0, 0
+        JR_EQ ENDIF_{local_num}\n"""
+            result += self.children[4].generate()
+            result += f"""ENDIF_{local_num}\n"""
+        elif self.isProduction('KR_IF L_ZAGRADA <izraz> D_ZAGRADA <naredba> KR_ELSE <naredba>'):
+            result += f"""IF_{local_num}\n"""
+            result += self.children[2].generate()
+            result += f"""\
+        POP R0
+        CMP R0, 0
+        JR_EQ ELSE_{local_num}\n"""
+            result += self.children[4].generate()
+            result +=f"""\
+        JR ENDIF_{local_num}\n"""
+            result += f"""ELSE_{local_num}\n"""
+            result += self.children[6].generate()
+            result += f"""ENDIF_{local_num}"""
+        return result;
+
 
 class Naredba_petlje(Node):
     def __init__(self, data):

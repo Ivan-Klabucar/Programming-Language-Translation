@@ -1,0 +1,39 @@
+<prijevodna_jedinica>           ?
+<primarni_izraz>                ?
+<vanjska_deklaracija>           ?
+<deklaracija>                   ?
+<lista_init_deklaratora>        0
+<init_deklarator>               0
+<izravni_deklarator>            ?
+<inicijalizator>                ?
+<ime_tipa>                      1 - ne treba generate?
+<specifikator_tipa>             1 - ne treba generate?
+<cast_izraz>                    0
+<unarni_izraz>                  0
+<unarni_operator>               0
+<multiplikativni_izraz>         0
+<slozena_naredba>               ?
+<lista_naredbi>                 0
+<lista_deklaracija>             0
+<naredba>                       0
+<izraz_naredba>                 0
+<naredba_grananja>              0
+<naredba_petlje>                1
+<nareba_skoka>                  0
+<izraz_pridruzivanja>           0
+<izraz>                         0
+<postfiks_izraz>                0
+<lista_argumenata>              0
+<log_ili_izraz>                 0
+<log_i_izraz>                   0
+<bin_ili_izraz>                 0
+<bin_xili_izraz>                0
+<bin_i_izraz>                   0
+<jednakosni_izraz>              0
+<odnosni_izraz>                 0
+<aditivni_izraz>                0
+<definicija_funkcije>           0
+<lista_parametara>              0
+<deklaracija_parametra>         0
+<lista_izraza_pridruzivanja>    0
+
