@@ -23,7 +23,7 @@ class Prijevodna_jedinica(Node):
         result = ''
         if self.parent == None: 
             result = \
-        """
+        """\
         MOVE 40000, R7 
         CALL F_MAIN 
         HALT\n"""
@@ -79,14 +79,74 @@ class Primarni_izraz(Node):
     
     def generate(self):
         if self.isProduction('IDN'):
-            idn_entry = self.tablica_znakova.get_idn_and_other_info(self.children[0].ime)
-        elif self.isProduction('BROJ'):
+            idn_entry, level, is_global = self.tablica_znakova.get_idn_and_other_info(self.children[0].ime)
+            result = ''
+            if is_X(idn_entry.tip):
+                if is_global:
+                    result += f"""\
+                LOAD R0, ({idn_entry.label})
+                PUSH R0\n"""
+                    return result
+                
+                if level > 0:
+                    result += """\
+                PUSH R5\n"""
+                    cnt = level
+                    while cnt > 0:
+                        result += """\
+                LOAD R5, (R5)\n"""
+                        cnt -= 1
+                
+                result += f"""\
+                LOAD R0, (R5 + %D {idn_entry.odmak})\n"""
+                
+                if level > 0:
+                    result += """\
+                POP R5\n"""
 
-        elif self.isProduction('ZNAK'):
+                result += """\
+                PUSH R0\n"""
+                return result
+            elif is_seq(idn_entry.tip):
+                if is_global:
+                    result += f"""\
+                MOVE {idn_entry.label}, R0
+                PUSH R0\n"""
+                    return result
+                
+                if level > 0:
+                    result += """\
+                PUSH R5\n"""
+                    cnt = level
+                    while cnt > 0:
+                        result += """\
+                LOAD R5, (R5)\n"""
+                        cnt -= 1
+                
+                result += f"""\
+                MOVE R5, R0
+                ADD  R0, %D {idn_entry.odmak}, R0\n"""
+                
+                if level > 0:
+                    result += """\
+                POP R5\n"""
 
+                result += """\
+                PUSH R0\n"""
+                return result
+
+        elif self.isProduction('BROJ') or self.isProduction('ZNAK'):
+            result = f"""\
+            LOAD R0, ({self.children[0].label})
+            PUSH R0\n"""
+            return result
         elif self.isProduction('NIZ_ZNAKOVA'):
-
+r           esult = f"""\
+            MOVE {self.children[0].label}, R0
+            PUSH R0\n"""
+            return result
         elif self.isProduction('L_ZAGRADA <izraz> D_ZAGRADA'):
+            return self.children[0].generate()
 
 
 
