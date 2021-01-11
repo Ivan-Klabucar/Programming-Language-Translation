@@ -8,6 +8,10 @@ global cond_num
 loop_num = 0
 cond_num = 0
 
+class OdmakWrapper:
+    def __init__(self, odmak):
+        self.val = odmak
+
 class Prijevodna_jedinica(Node):
     def __init__(self, data):
         super().__init__(data)
@@ -31,7 +35,7 @@ class Prijevodna_jedinica(Node):
             result = \
         """\
         MOVE 40000, R7 
-        CALL F_MAIN 
+        CALL F_main
         HALT\n"""
 
         if self.isProduction('<vanjska_deklaracija>'):
@@ -190,8 +194,8 @@ class Deklaracija(Node):
             if not self.children[1].provjeri(ntip=self.children[0].tip): return False
         return True
     
-    def generate(self, outer=False, odmak=None):
-        return self.children[1].generate(outer=outer, odmak=odmak)
+    def generate(self, outer=False, odmak_w=None):
+        return self.children[1].generate(outer=outer, odmak_w=odmak_w)
 
 
 
@@ -209,15 +213,14 @@ class Lista_init_deklaratora(Node):
             if not self.children[2].provjeri(ntip=ntip): return False
         return True
     
-    def generate(self, odmak, outer=False):
+    def generate(self, odmak_w=None, outer=False):
         if self.isProduction('<init_deklarator>'):
-            return self.children[0].generate(outer=outer, odmak=odmak)
+            return self.children[0].generate(outer=outer, odmak_w=odmak_w)
         elif self.isProduction('<lista_init_deklaratora> ZAREZ <init_deklarator>'):
-            result, odmak = self.children[0].generate(outer=outer, odmak=odmak)
-            tmp1, odmakt = self.children[2].generate(outer=outer, odmak=odmak)  # FIX bacalo error, quick and dirty fix
-            odmak += odmakt
-            result += tmp1
-            return result, odmak
+            result = self.children[0].generate(outer=outer, odmak_w=odmak_w)
+            result += self.children[2].generate(outer=outer, odmak_w=odmak_w)  # FIX bacalo error, quick and dirty fix Fixed ?
+            return result
+
 
 class Init_deklarator(Node):
     def __init__(self, data):
@@ -265,7 +268,7 @@ class Init_deklarator(Node):
         
         return True
     
-    def generate(self, outer=False, odmak=False):
+    def generate(self, outer=False, odmak_w=None):
         if outer:
             if self.isProduction('<izravni_deklarator>'):
                 result = self.children[0].generate(outer=outer)
@@ -286,23 +289,23 @@ class Init_deklarator(Node):
             if self.isProduction('<izravni_deklarator>'):
                 if self.children[0].br_elem:
                     pomak = 4 * self.children[0].br_elem
-                    odmak = odmak - pomak + 4
-                    self.children[0].generate(odmak=odmak)
-                    odmak -= 4
-                    result = f"""
+                    odmak_w.val = odmak_w.val - pomak + 4
+                    self.children[0].generate(odmak_w=odmak_w)
+                    odmak_w.val -= 4
+                    result = f"""\
             SUB R7, %D {pomak}, R7\n"""
-                    return result, odmak
+                    return result
                 else:
-                    result = """
+                    result = """\
             SUB R7, 4, R7\n"""
-                    return result, 0 # FIX too many values to unpack
+                    return result # FIX too many values to unpack old comment
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 if self.children[0].br_elem:
                     pomak = 4 * self.children[0].br_elem
-                    odmak = odmak - pomak + 4
-                self.children[0].generate(odmak=odmak)
-                odmak -= 4
-                return self.children[2].generate(), odmak
+                    odmak_w.val = odmak_w.val - pomak + 4
+                self.children[0].generate(odmak_w=odmak_w)
+                odmak_w.val -= 4
+                return self.children[2].generate()
 
 
 
@@ -347,12 +350,12 @@ class Izravni_deklarator(Node):
             if self.children[0].ime not in self.tablica_znakova.tablica: self.tablica_znakova.add(key=self.children[0].ime, entry=TabZnakEntry(tip=f_type, lizraz=False))
         return True
     
-    def generate(self, outer=False, odmak=None):
+    def generate(self, outer=False, odmak_w=None):
         if self.isProduction('IDN') or self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
             result = f'G_{self.children[0].ime}'
             entry = self.tablica_znakova.get(self.children[0].ime)
             entry.label = result
-            if not outer and odmak != None: entry.odmak = odmak
+            if not outer and odmak_w != None: entry.odmak = odmak_w.val
             return result
         else:
             return ''
@@ -385,6 +388,22 @@ class Inicijalizator(Node):
         if outer:
             if self.isProduction('<izraz_pridruzivanja>'):
                 return self.children[0].generate(outer=outer)
+            elif self.isProduction('L_VIT_ZAGRADA <lista_izraza_pridruzivanja> D_VIT_ZAGRADA'):
+                return self.children[1].generate(outer=outer)
+        else:
+            if self.isProduction('<izraz_pridruzivanja>'):
+                result = self.children[0].generate(outer=outer)
+                izraz_pridruzivanja_zavrsni = self.children[0].get_zavrsni()
+                if len(izraz_pridruzivanja_zavrsni) == 1 and izraz_pridruzivanja_zavrsni[0].name == 'NIZ_ZNAKOVA':
+                    result += f"""\
+                    POP R0
+                    ADD R0, %D {(self.br_elem - 1) * 4}, R0\n"""
+                    for i in range(self.br_elem):
+                        result += """\
+                    LOAD R1, (R0)
+                    PUSH R1
+                    SUB  R0, 4, R0\n"""
+                return result
             elif self.isProduction('L_VIT_ZAGRADA <lista_izraza_pridruzivanja> D_VIT_ZAGRADA'):
                 return self.children[1].generate(outer=outer)
 
@@ -580,17 +599,17 @@ class Slozena_naredba(Node):
                 self.tablica_znakova.get(ime).odmak = i * 4
                 i += 1
 
-        result = """
+        result = """\
         PUSH R5
         MOVE R7, R5\n"""
 
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
             result += self.children[1].generate(num)
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
-            result += self.children[1].generate(odmak=-4)[0]
+            result += self.children[1].generate(odmak_w=OdmakWrapper(-4))
             result += self.children[2].generate(num)
         
-        result += """
+        result += """\
         MOVE R5, R7
         POP  R5\n"""
 
@@ -640,17 +659,14 @@ class Lista_deklaracija(Node):
             if not self.children[1].provjeri(): return False
         return True
     
-    def generate(self, odmak=None):
+    def generate(self, odmak_w=None):
         result = ''
         if self.isProduction('<deklaracija>'):
-            result_str, odmak = self.children[0].generate(odmak=odmak)
-            result += result_str
+            result += self.children[0].generate(odmak_w=odmak_w)
         elif self.isProduction('<lista_deklaracija> <deklaracija>'):
-            tmp1, odmak = self.children[0].generate(odmak=odmak)
-            result += tmp1
-            tmp2, odmak = self.children[1].generate(odmak=odmak)
-            result += tmp2
-        return result, None # FIX too many values to unpack, quick and dirty
+            result += self.children[0].generate(odmak_w=odmak_w)
+            result += self.children[1].generate(odmak_w=odmak_w)
+        return result
 
 class Naredba(Node):
     def __init__(self, data):
@@ -670,7 +686,7 @@ class Naredba(Node):
 
     def generate(self, num = -1):
         if not self.isProduction('<naredba_petlje>') or not self.isProduction('<izraz_naredba>'):
-            return self.children[0].generate(num)
+            return self.children[0].generate(num=num)
         else:
             return self.children[0].generate()
 
@@ -929,10 +945,6 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
             result += self.children[1].generate()
             result += """\
         POP R6
-        MOVE R5, R7
-        POP  R5
-        RET\n"""
-            result += """\
         MOVE R5, R7
         POP  R5
         RET\n"""
