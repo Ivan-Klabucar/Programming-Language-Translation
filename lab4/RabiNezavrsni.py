@@ -45,7 +45,15 @@ class Izraz_pridruzivanja(Node):
             if self.isProduction('<log_ili_izraz>'):
                 return self.children[0].generate()
             elif self.isProduction('<postfiks_izraz> OP_PRIDRUZI <izraz_pridruzivanja>'): # ovim se jos ne bi bavio
-                return 'TREBA IMPLEMENTIRAT DO KRAJA Izraz_pridruzivanja'
+                result = self.children[2].generate()
+                result += self.children[0].generate(for_assign=True)
+                result += """\
+                POP   R0
+                POP   R1
+                STORE R1, (R0)
+                PUSH  R1\n"""
+                return result
+
 
 class Izraz(Node):
     def __init__(self, data):
@@ -75,6 +83,7 @@ class Izraz(Node):
                 return self.children[0].generate() + self.children[2].generate() # Treba provjerit mislim da bi se trebalo obrisat sta god je desni izraz stavio na stog ? TREBA IMPLEMENTIRAT
         except e:
             return 'Treba implementirat Izraz\n'
+
 
 class Postfiks_izraz(Node):
     def __init__(self, data):
@@ -151,11 +160,27 @@ class Postfiks_izraz(Node):
             self.lizraz = False
         return True
     
-    def generate(self):
+    def generate(self, for_assign=False):
         if self.isProduction('<primarni_izraz>'):
-            return self.children[0].generate()
+            return self.children[0].generate(for_assign=for_assign)
         elif self.isProduction('<postfiks_izraz> L_UGL_ZAGRADA <izraz> D_UGL_ZAGRADA'):
-            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+            result = self.children[2].generate()
+            result += self.children[0].generate(for_assign=for_assign)
+            result += f"""\
+            POP R0
+            POP R1
+            CMP R1, 0
+            JR_Z %D 16
+            ADD R0, 4, R0
+            SUB R1, 1, R1
+            JR %D -16
+            PUSH R0\n"""
+            if not for_assign:
+                result += """\
+                POP R0
+                LOAD R0, (R0)
+                PUSH R0\n"""
+            return result
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA D_ZAGRADA'):
             return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA <lista_argumenata> D_ZAGRADA'):
@@ -553,12 +578,26 @@ class Aditivni_izraz(Node):
         return True
     
     def generate(self):
+        result = ''
         if self.isProduction('<multiplikativni_izraz>'):
-            return self.children[0].generate()
+            result = self.children[0].generate()
         elif self.isProduction('<aditivni_izraz> PLUS <multiplikativni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
+            result += self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP  R0
+            POP  R1
+            ADD  R0, R1, R0
+            PUSH R0\n"""
         elif self.isProduction('<aditivni_izraz> MINUS <multiplikativni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Aditivni_izraz'
+            result += self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP  R0
+            POP  R1
+            SUB  R0, R1, R0
+            PUSH R0\n"""
+        return result
 
 
 class Definicija_funkcije(Node):
