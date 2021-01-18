@@ -188,3 +188,25 @@ print(root.generate())
 for x in const_init_list:
     print(x)
 
+multiply_definition=f"""
+MULTIPLY    PUSH R5
+            MOVE R7, R5
+            LOAD R0, (R5 + 8)
+            LOAD R1, (R5 + C)
+            MOVE 0, R6
+MUL_LP      CMP R1, 0
+            JR_EQ END_MUL_LP
+            JR_SGT POS_MUL_LP
+            JR_SLT NEG_MUL_LP
+POS_MUL_LP  ADD R6, R0, R6
+            SUB R1, 1, R1
+            JR MUL_LP
+NEG_MUL_LP  SUB R6, R0, R6
+            ADD R1, 1, R1
+            JR MUL_LP
+END_MUL_LP  
+            ADD  R5, 4, R5
+            MOVE R5, R7
+            RET\n"""
+
+divide_definition=f"""treba ubaciti dijeljenje\n"""

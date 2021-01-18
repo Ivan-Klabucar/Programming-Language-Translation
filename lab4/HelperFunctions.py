@@ -1,3 +1,5 @@
+import re
+
 def is_const(type): # Samo je li vanjski const
     if not type: return False
     retb = False
@@ -66,3 +68,11 @@ def is_param_void_func(function_type):
 
 def param_types(function_type):
     return eval(function_type.split('->')[0].strip()[9:])
+
+def num_of_lines(tekst): # Vraca broj linija koje su kod (ne racuna linije koje su samo labela ili samo komentar)
+    tekst = tekst.split('\n')
+    count = 0
+    for line in tekst:
+        if line and re.search("^[a-zA-Z]* +[a-zA-Z]+(|;.*)",line):
+            count += 1
+    return count

@@ -243,7 +243,23 @@ class Log_ili_izraz(Node):
         if self.isProduction('<log_i_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<log_ili_izraz> OP_ILI <log_i_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Log_ili_izraz'
+            result = self.children[0].generate
+            result2 = self.children[2].generate
+            result += f"""\
+            POP R0
+            CMP R0, 0
+            JR_NE {(num_of_lines(result2)+6)*4 }
+            PUSH R0"""
+            result += result2
+            result += """\
+            POP R0
+            POP R1
+            OR R0, R1, R0
+            CMP R0, 0
+            JR_EQ 8
+            MOVE R0, 1
+            PUSH R0\n"""
+            return result
 
 class Log_i_izraz(Node):
     def __init__(self, data):
@@ -279,7 +295,22 @@ class Log_i_izraz(Node):
         if self.isProduction('<bin_ili_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<log_i_izraz> OP_I <bin_ili_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Log_i_izraz'
+            result = self.children[0].generate
+            result2 = self.children[2].generate
+            result += f"""\
+            POP R0
+            CMP R0, 0
+            JR_EQ {(num_of_lines(result2) + 6) * 4}
+            PUSH R0"""
+            result += result2
+            result += """\
+            POP R0
+            POP R1
+            CMP R1, 0
+            JR_EQ 8
+            MOVE R0, 1
+            PUSH R0\n"""
+            return result
 
 
 class Bin_ili_izraz(Node):
@@ -316,7 +347,14 @@ class Bin_ili_izraz(Node):
         if self.isProduction('<bin_xili_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<bin_ili_izraz> OP_BIN_ILI <bin_xili_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Bin_ili_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R0
+            POP R1
+            OR R0, R1, R0
+            PUSH R0\n"""
+            return result
 
 
 class Bin_xili_izraz(Node):
@@ -353,7 +391,14 @@ class Bin_xili_izraz(Node):
         if self.isProduction('<bin_i_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<bin_xili_izraz> OP_BIN_XILI <bin_i_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Bin_xili_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R0
+            POP R1
+            XOR R0, R1, R0
+            PUSH R0\n"""
+            return result
 
 class Bin_i_izraz(Node):
     def __init__(self, data):
@@ -389,7 +434,14 @@ class Bin_i_izraz(Node):
         if self.isProduction('<jednakosni_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<bin_i_izraz> OP_BIN_I <jednakosni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Bin_i_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R0
+            POP R1
+            AND R0, R1, R0
+            PUSH R0\n"""
+            return result
 
 class Jednakosni_izraz(Node):
     def __init__(self, data):
@@ -440,9 +492,31 @@ class Jednakosni_izraz(Node):
         if self.isProduction('<odnosni_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<jednakosni_izraz> OP_EQ <odnosni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Jednakosni_izraz'
-        elif self.isProduction('<jednakosni_izraz> OP_NEQ<odnosni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Jednakosni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R0
+            POP R1
+            CMP R0, R1
+            JR_NEQ C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
+        elif self.isProduction('<jednakosni_izraz> OP_NEQ <odnosni_izraz>'):
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R0
+            POP R1
+            CMP R0, R1
+            JR_EQ C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
 
 
 class Odnosni_izraz(Node):
@@ -524,13 +598,57 @@ class Odnosni_izraz(Node):
         if self.isProduction('<aditivni_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<odnosni_izraz> OP_LT <aditivni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R1
+            POP R0
+            CMP R0, R1
+            JR_SGE C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
         elif self.isProduction('<odnosni_izraz> OP_GT <aditivni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R1
+            POP R0
+            CMP R0, R1
+            JR_SLE C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
         elif self.isProduction('<odnosni_izraz> OP_LTE <aditivni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R1
+            POP R0
+            CMP R0, R1
+            JR_SGT C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
         elif self.isProduction('<odnosni_izraz> OP_GTE <aditivni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Odnosni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            POP R1
+            POP R0
+            CMP R0, R1
+            JR_SLT C
+            MOVE 1, R0
+            JR 8
+            MOVE 0, R0
+            PUSH R0\n"""
+            return result
 
 class Aditivni_izraz(Node):
     def __init__(self, data):

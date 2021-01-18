@@ -1,5 +1,5 @@
 <prijevodna_jedinica>           ?
-<primarni_izraz>                ?
+<primarni_izraz>                ? - treba dodati kad je IDN funkcija
 <vanjska_deklaracija>           ?
 <deklaracija>                   ?
 <lista_init_deklaratora>        0
@@ -24,14 +24,14 @@
 <izraz>                         0
 <postfiks_izraz>                0
 <lista_argumenata>              0
-<log_ili_izraz>                 0
-<log_i_izraz>                   0
-<bin_ili_izraz>                 0
-<bin_xili_izraz>                0
-<bin_i_izraz>                   0
-<jednakosni_izraz>              0
-<odnosni_izraz>                 0
-<aditivni_izraz>                0
+<log_ili_izraz>                 1
+<log_i_izraz>                   1
+<bin_ili_izraz>                 1
+<bin_xili_izraz>                1
+<bin_i_izraz>                   1
+<jednakosni_izraz>              1
+<odnosni_izraz>                 1
+<aditivni_izraz>                1
 <definicija_funkcije>           0
 <lista_parametara>              0
 <deklaracija_parametra>         0
