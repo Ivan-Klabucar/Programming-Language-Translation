@@ -89,7 +89,7 @@ class NIZ_ZNAKOVA(Node):
         if self.is_valid():
             self.label = f'CONST_{num}'
             num += 1
-            result = f'{self.label}   DW %D'
+            result = f'{self.label}   DW '
             result += self.get_ords_with_commas()
             const_init_list.append(result)
     
@@ -118,9 +118,9 @@ class NIZ_ZNAKOVA(Node):
     def get_ords_with_commas(self):
         result = ''
         for c in self.true_string:
-                result += f' {ord(c)},'
+                result += f'%D {ord(c)},'
         terminator = '\0'
-        result += f' {ord(terminator)},'
+        result += f'%D {ord(terminator)},'
         return result
 
 class SimpleZavrsni(Node):

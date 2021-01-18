@@ -87,14 +87,20 @@ class Primarni_izraz(Node):
             self.lizraz = self.children[1].lizraz
         return True
     
-    def generate(self):
+    def generate(self, for_assign=False):
         if self.isProduction('IDN'):
             idn_entry, level, is_global = self.tablica_znakova.get_idn_and_other_info(self.children[0].ime)
             result = ''
             if is_X(idn_entry.tip):
-                if is_global:
+                if is_global and not for_assign:
                     result += f"""\
                 LOAD R0, ({idn_entry.label})
+                PUSH R0\n"""
+                    return result
+                
+                if is_global and for_assign:
+                    result += f"""\
+                MOVE {idn_entry.label}, R0
                 PUSH R0\n"""
                     return result
                 
@@ -107,8 +113,12 @@ class Primarni_izraz(Node):
                 LOAD R5, (R5)\n"""
                         cnt -= 1
                 
-                result += f"""\
+                if not for_assign: result += f"""\
                 LOAD R0, (R5 + %D {idn_entry.odmak})\n"""
+                else:
+                    result += f"""\
+                MOVE R5, R0
+                ADD R0, %D {idn_entry.odmak}, R0\n"""
                 
                 if level > 0:
                     result += """\
@@ -156,7 +166,7 @@ class Primarni_izraz(Node):
             PUSH R0\n"""
             return result
         elif self.isProduction('L_ZAGRADA <izraz> D_ZAGRADA'):
-            return self.children[0].generate()
+            return self.children[1].generate() # for_assign=for_assign ?? kak sad ovo ide TREBA IMPLEMENTIRAT
 
 
 
@@ -275,14 +285,14 @@ class Init_deklarator(Node):
                 if is_X(self.children[0].tip):
                     result += ' DW %D 0\n'
                 elif is_seq(self.children[0].tip):
-                    result += ' DW %D'
+                    result += ' DW '
                     for i in range(self.children[0].br_elem):
-                        result += ' 0,'
+                        result += '%D 0,'
                     result += '\n'
                 return result
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 result = self.children[0].generate(outer=outer)
-                result += ' DW %D '
+                result += ' DW '
                 result += self.children[2].generate(outer=outer) + '\n'
                 return result
         else:
@@ -473,7 +483,7 @@ class Cast_izraz(Node):
         if self.isProduction('<unarni_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('L_ZAGRADA <ime_tipa> D_ZAGRADA <cast_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Cast_izraz'
+            return self.children[3].generate()
 
 class Unarni_izraz(Node):
     def __init__(self, data):
@@ -685,7 +695,7 @@ class Naredba(Node):
         return True
 
     def generate(self, num = -1):
-        if not self.isProduction('<naredba_petlje>') or not self.isProduction('<izraz_naredba>'):
+        if not self.isProduction('<naredba_petlje>') and not self.isProduction('<izraz_naredba>'):
             return self.children[0].generate(num=num)
         else:
             return self.children[0].generate()

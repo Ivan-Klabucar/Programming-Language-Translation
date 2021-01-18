@@ -34,9 +34,9 @@ class Izraz_pridruzivanja(Node):
             while curr.children:
                 curr = curr.children[0]
             if curr.name == "BROJ":
-                return str(curr.vrijednost)
+                return '%D ' + str(curr.vrijednost)
             elif curr.name == "ZNAK":
-                return str(ord(curr.char))
+                return '%D ' + str(ord(curr.char))
             elif curr.name == "NIZ_ZNAKOVA":
                 return curr.get_ords_with_commas()
             else:
