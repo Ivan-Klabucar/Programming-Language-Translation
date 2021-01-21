@@ -576,11 +576,26 @@ class Multiplikativni_izraz(Node):
         if self.isProduction('<cast_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<multiplikativni_izraz> OP_PUTA <cast_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            CALL MULTIPLY
+            PUSH R6\n"""
+            return result
         elif self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            CALL DIVIDE
+            PUSH R6\n"""
+            return result
         elif self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Multiplikativni_izraz'
+            result = self.children[0].generate()
+            result += self.children[2].generate()
+            result += """\
+            CALL MOD
+            PUSH R6\n"""
+            return result
 
 class Slozena_naredba(Node):
     def __init__(self, data):

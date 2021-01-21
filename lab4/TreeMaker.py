@@ -188,7 +188,7 @@ print(root.generate())
 for x in const_init_list:
     print(x)
 
-multiply_definition=f"""
+multiply_definition = f"""
 MULTIPLY    PUSH R5
             MOVE R7, R5
             LOAD R0, (R5 + 8)
@@ -209,4 +209,55 @@ END_MUL_LP
             MOVE R5, R7
             RET\n"""
 
-divide_definition=f"""treba ubaciti dijeljenje\n"""
+divide_definition = f"""
+DIVIDE      PUSH R5
+            MOVE R7, R5
+            LOAD R1, (R5 + 8)
+            LOAD R0, (R5 + C)
+            MOVE 0, R3
+            MOVE 0, R4
+            MOVE 0, R6
+            CMP R0, 0
+            JR_EQ END_DIV
+            JR_SGT 8
+            XOR R3, 1, R3
+            SUB R4, R0, R0
+            CMP R1, 0
+            JR_SGT 8
+            XOR R3, 1, R3
+            SUB R4, R1, R1
+DIV_LP      CMP R0, R1
+            JR_SLT END_DIV_LP
+            SUB R0, R1, R0
+            ADD R6, 1, R6
+            JR DIV_LP
+END_DIV_LP  
+            CMP R3, 1
+            JR_NE END_DIV
+            SUB  R4, R6, R6
+END_DIV
+            PUSH R6
+            ADD  R5, 4, R5
+            MOVE R5, R7
+            RET\n"""
+
+modulus_definition = f"""
+MOD         PUSH R5
+            MOVE R7, R5
+            LOAD R1, (R5 + 8)
+            LOAD R0, (R5 + C)
+            MOVE 0, R6
+            CMP R0, 0
+            JR_EQ END_MOD
+MOD_LP      CMP R0, R1
+            JR_SLT END_MOD_LP
+            SUB R0, R1, R0
+            ADD R6, 1, R6
+            JR MOD_LP
+END_MOD_LP  
+            MOVE R0, R6
+END_MOD
+            PUSH R6
+            ADD  R5, 4, R5
+            MOVE R5, R7
+            RET\n"""

@@ -11,7 +11,7 @@
 <cast_izraz>                    0
 <unarni_izraz>                  0
 <unarni_operator>               0
-<multiplikativni_izraz>         0
+<multiplikativni_izraz>         1
 <slozena_naredba>               1
 <lista_naredbi>                 1
 <lista_deklaracija>             0
