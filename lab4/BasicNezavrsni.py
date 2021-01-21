@@ -530,7 +530,41 @@ class Unarni_izraz(Node):
         elif self.isProduction('OP_DEC <unarni_izraz>'):
             return 'TREBA IMPLEMENTIRAT Unarni_izraz'
         elif self.isProduction('<unarni_operator> <cast_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
+            if self.children[0].isProduction('PLUS'):
+                result = self.children[1].generate()
+                result += """\
+            POP R0
+            CMP R0, 0
+            JR_SGE C
+            MOVE 0, R1
+            SUB R1, R0, R0
+            PUSH R0\n"""
+            elif self.children[0].isProduction('MINUS'):
+                result = self.children[1].generate()
+                result += """\
+            POP R0
+            CMP R0, 0
+            JR_SLE C
+            MOVE 0, R1
+            SUB R1, R0, R0
+            PUSH R0\n"""
+            elif self.children[0].isProduction('OP_TILDA'):
+                result = self.children[1].generate()
+                result += """\
+            POP R0
+            MOVE -1, R1
+            XOR R0, R1, R0
+            PUSH R0\n"""
+            elif self.children[0].isProduction('OP_NEG'):
+                result = self.children[1].generate()
+                result += """\
+            POP R0
+            CMP R0, 0
+            JR_NE 8
+            MOVE 1, R0
+            JR 4
+            MOVE 0, R0
+            PUSH R0\n"""
 
 class Unarni_operator(Node):
     def __init__(self, data):

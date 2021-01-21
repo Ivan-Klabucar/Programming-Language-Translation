@@ -8,9 +8,9 @@
 <inicijalizator>                ?
 <ime_tipa>                      1 - ne treba generate?
 <specifikator_tipa>             1 - ne treba generate?
-<cast_izraz>                    0
+<cast_izraz>                    1 - ne treba nis ekstra, napravljeno u lab 3????
 <unarni_izraz>                  0
-<unarni_operator>               0
+<unarni_operator>               1
 <multiplikativni_izraz>         1
 <slozena_naredba>               1
 <lista_naredbi>                 1
@@ -21,7 +21,7 @@
 <naredba_petlje>                1
 <nareba_skoka>                  1
 <izraz_pridruzivanja>           0
-<izraz>                         0
+<izraz>                         1
 <postfiks_izraz>                0
 <lista_argumenata>              0
 <log_ili_izraz>                 1
@@ -35,5 +35,5 @@
 <definicija_funkcije>           0
 <lista_parametara>              0
 <deklaracija_parametra>         0
-<lista_izraza_pridruzivanja>    0
+<lista_izraza_pridruzivanja>    1
 

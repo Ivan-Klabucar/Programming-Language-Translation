@@ -76,13 +76,14 @@ class Izraz(Node):
         return True
 
     def generate(self):
-        try:
-            if self.isProduction('<izraz_pridruzivanja>'):
-                return self.children[0].generate()
-            elif self.isProduction('<izraz> ZAREZ <izraz_pridruzivanja>'):
-                return self.children[0].generate() + self.children[2].generate() # Treba provjerit mislim da bi se trebalo obrisat sta god je desni izraz stavio na stog ? TREBA IMPLEMENTIRAT
-        except e:
-            return 'Treba implementirat Izraz\n'
+        if self.isProduction('<izraz_pridruzivanja>'):
+            return self.children[0].generate()
+        elif self.isProduction('<izraz> ZAREZ <izraz_pridruzivanja>'):
+            result = self.children[0].generate()
+            result += """\
+            ADD R7, 4, R7\n"""
+            result += self.children[2].generate()
+            return result
 
 
 class Postfiks_izraz(Node):
