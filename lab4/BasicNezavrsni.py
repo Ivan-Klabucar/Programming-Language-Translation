@@ -315,7 +315,8 @@ class Init_deklarator(Node):
                 else:
                     result = """\
             SUB R7, 4, R7\n"""
-            # MISLIM DA TU FALI self.children[0].generate(odmak_w=odmak_w) / odmak_w.val -= 4 TREBA IMPLEMENTIRAT
+                    self.children[0].generate(odmak_w=odmak_w)
+                    odmak_w.val -= 4
                     return result # FIX too many values to unpack old comment
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 if self.children[0].br_elem:
@@ -372,7 +373,7 @@ class Izravni_deklarator(Node):
         if self.isProduction('IDN') or self.isProduction('IDN L_UGL_ZAGRADA BROJ D_UGL_ZAGRADA'):
             result = f'G_{self.children[0].ime}'
             entry = self.tablica_znakova.get(self.children[0].ime)
-            entry.label = result
+            if outer: entry.label = result
             if not outer and odmak_w != None: entry.odmak = odmak_w.val
             return result
         else:
