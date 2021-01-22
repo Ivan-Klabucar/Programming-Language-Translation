@@ -2,28 +2,28 @@
 <primarni_izraz>                ? - treba dodati kad je IDN funkcija
 <vanjska_deklaracija>           ?
 <deklaracija>                   ?
-<lista_init_deklaratora>        0
-<init_deklarator>               0
+<lista_init_deklaratora>        1
+<init_deklarator>               1
 <izravni_deklarator>            ?
 <inicijalizator>                ?
 <ime_tipa>                      1 - ne treba generate?
 <specifikator_tipa>             1 - ne treba generate?
 <cast_izraz>                    1 - ne treba nis ekstra, napravljeno u lab 3????
-<unarni_izraz>                  0
+<unarni_izraz>                  1
 <unarni_operator>               1
 <multiplikativni_izraz>         1
 <slozena_naredba>               1
 <lista_naredbi>                 1
-<lista_deklaracija>             0
+<lista_deklaracija>             1
 <naredba>                       1
 <izraz_naredba>                 1
 <naredba_grananja>              1
 <naredba_petlje>                1
 <nareba_skoka>                  1
-<izraz_pridruzivanja>           0
+<izraz_pridruzivanja>           1
 <izraz>                         1
-<postfiks_izraz>                0
-<lista_argumenata>              0
+<postfiks_izraz>                1
+<lista_argumenata>              1
 <log_ili_izraz>                 1
 <log_i_izraz>                   1
 <bin_ili_izraz>                 1
@@ -32,7 +32,7 @@
 <jednakosni_izraz>              1
 <odnosni_izraz>                 1
 <aditivni_izraz>                1
-<definicija_funkcije>           0
+<definicija_funkcije>           1
 <lista_parametara>              0
 <deklaracija_parametra>         0
 <lista_izraza_pridruzivanja>    1

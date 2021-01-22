@@ -183,16 +183,9 @@ if root.provjeri():
         print('main')
 #print(get_defined_functions(root))
 
-print("Program:\n")
-print(root.generate())
-for x in const_init_list:
-    print(x)
-
 multiply_definition = f"""
-MULTIPLY    PUSH R5
-            MOVE R7, R5
-            LOAD R0, (R5 + 8)
-            LOAD R1, (R5 + C)
+MULTIPLY    LOAD R0, (R7 + 4)
+            LOAD R1, (R7 + 8)
             MOVE 0, R6
 MUL_LP      CMP R1, 0
             JR_EQ END_MUL_LP
@@ -205,25 +198,21 @@ NEG_MUL_LP  SUB R6, R0, R6
             ADD R1, 1, R1
             JR MUL_LP
 END_MUL_LP  
-            ADD  R5, 4, R5
-            MOVE R5, R7
             RET\n"""
 
 divide_definition = f"""
-DIVIDE      PUSH R5
-            MOVE R7, R5
-            LOAD R1, (R5 + 8)
-            LOAD R0, (R5 + C)
+DIVIDE      LOAD R1, (R7 + 4)
+            LOAD R0, (R7 + 8)
             MOVE 0, R3
             MOVE 0, R4
             MOVE 0, R6
             CMP R0, 0
             JR_EQ END_DIV
-            JR_SGT 8
+            JR_SGT %D 12
             XOR R3, 1, R3
             SUB R4, R0, R0
             CMP R1, 0
-            JR_SGT 8
+            JR_SGT %D 12
             XOR R3, 1, R3
             SUB R4, R1, R1
 DIV_LP      CMP R0, R1
@@ -236,16 +225,11 @@ END_DIV_LP
             JR_NE END_DIV
             SUB  R4, R6, R6
 END_DIV
-            PUSH R6
-            ADD  R5, 4, R5
-            MOVE R5, R7
             RET\n"""
 
 modulus_definition = f"""
-MOD         PUSH R5
-            MOVE R7, R5
-            LOAD R1, (R5 + 8)
-            LOAD R0, (R5 + C)
+MOD         LOAD R1, (R7 + 4)
+            LOAD R0, (R7 + 8)
             MOVE 0, R6
             CMP R0, 0
             JR_EQ END_MOD
@@ -257,7 +241,11 @@ MOD_LP      CMP R0, R1
 END_MOD_LP  
             MOVE R0, R6
 END_MOD
-            PUSH R6
-            ADD  R5, 4, R5
-            MOVE R5, R7
             RET\n"""
+
+print(root.generate())
+print(multiply_definition)
+print(divide_definition)
+print(modulus_definition)
+for x in const_init_list:
+    print(x)

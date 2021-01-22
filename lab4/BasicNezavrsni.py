@@ -317,7 +317,7 @@ class Init_deklarator(Node):
             SUB R7, 4, R7\n"""
                     self.children[0].generate(odmak_w=odmak_w)
                     odmak_w.val -= 4
-                    return result # FIX too many values to unpack old comment
+                    return result
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 if self.children[0].br_elem:
                     pomak = 4 * self.children[0].br_elem
@@ -488,11 +488,11 @@ class Cast_izraz(Node):
             self.lizraz = False
         return True
     
-    def generate(self):
+    def generate(self, for_assign = False):
         if self.isProduction('<unarni_izraz>'):
-            return self.children[0].generate()
+            return self.children[0].generate(for_assign=for_assign)
         elif self.isProduction('L_ZAGRADA <ime_tipa> D_ZAGRADA <cast_izraz>'):
-            return self.children[3].generate()
+            return self.children[3].generate(for_assign=for_assign)
 
 class Unarni_izraz(Node):
     def __init__(self, data):
@@ -531,49 +531,97 @@ class Unarni_izraz(Node):
             self.lizraz = False
         return True
     
-    def generate(self):
+    def generate(self, for_assign = False):
         if self.isProduction('<postfiks_izraz>'):
-            return self.children[0].generate()
+            return self.children[0].generate(for_assign=for_assign)
         elif self.isProduction('OP_INC <unarni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
+            result = self.children[1].generate(for_assign=True)
+            result += """\
+            POP R0
+            LOAD R1, (R0)
+            ADD R1, 1, R1
+            STORE R1, (R0)
+            PUSH R0\n"""
+            if not for_assign:
+                result +="""\
+            POP R0
+            LOAD R0, (R0)
+            PUSH R0\n"""
+            return result
         elif self.isProduction('OP_DEC <unarni_izraz>'):
-            return 'TREBA IMPLEMENTIRAT Unarni_izraz'
-        elif self.isProduction('<unarni_operator> <cast_izraz>'):
-            if self.children[0].isProduction('PLUS'):
-                result = self.children[1].generate()
+            result = self.children[1].generate(for_assign=True)
+            result += """\
+            POP R0
+            LOAD R1, (R0)
+            SUB R1, 1, R1
+            STORE R1, (R0)
+            PUSH R0\n"""
+            if not for_assign:
                 result += """\
             POP R0
-            CMP R0, 0
-            JR_SGE C
-            MOVE 0, R1
-            SUB R1, R0, R0
+            LOAD R0, (R0)
             PUSH R0\n"""
-            elif self.children[0].isProduction('MINUS'):
-                result = self.children[1].generate()
-                result += """\
+            return result
+        elif self.isProduction('<unarni_operator> <cast_izraz>'): # razmisli for asssign
+            result = self.children[1].generate(for_assign=for_assign)
+            if self.children[0].isProduction('MINUS'):
+                if for_assign:
+                    result += """\
             POP R0
-            CMP R0, 0
-            JR_SLE C
-            MOVE 0, R1
-            SUB R1, R0, R0
+            LOAD R1, (R0)\n"""
+                else:
+                    result += """\
+            POP R1\n"""
+                result += """\
+            MOVE 0, R2
+            SUB R2, R1, R1\n"""
+                if for_assign:
+                    result += """\
+            STORE R1, (R0)
             PUSH R0\n"""
+                else:
+                    result += """\
+            PUSH R1\n"""
             elif self.children[0].isProduction('OP_TILDA'):
-                result = self.children[1].generate()
-                result += """\
+                if for_assign:
+                    result += """\
             POP R0
-            MOVE -1, R1
-            XOR R0, R1, R0
+            LOAD R1, (R0)\n"""
+                else:
+                    result += """\
+            POP R1\n"""
+                result += """\
+            MOVE -1, R2
+            XOR R1, R2, R1\n"""
+                if for_assign:
+                    result += """\
+            STORE R1, (R0)
             PUSH R0\n"""
+                else:
+                    result += """\
+            PUSH R1\n"""
             elif self.children[0].isProduction('OP_NEG'):
-                result = self.children[1].generate()
-                result += """\
+                if for_assign:
+                    result += """\
             POP R0
-            CMP R0, 0
-            JR_NE 8
-            MOVE 1, R0
-            JR 4
-            MOVE 0, R0
+            LOAD R1, (R0)\n"""
+                else:
+                    result += """\
+            POP R1\n"""
+                result += """\
+            CMP R1, 0
+            JR_NE %D 12
+            MOVE 1, R1
+            JR 8
+            MOVE 0, R1\n"""
+                if for_assign:
+                    result += """\
+            STORE R1, (R0)
             PUSH R0\n"""
+                else:
+                    result += """\
+            PUSH R1\n"""
+            return result
 
 class Unarni_operator(Node):
     def __init__(self, data):
@@ -623,6 +671,7 @@ class Multiplikativni_izraz(Node):
             result += self.children[2].generate()
             result += """\
             CALL MULTIPLY
+            ADD R7, 8, R7
             PUSH R6\n"""
             return result
         elif self.isProduction('<multiplikativni_izraz> OP_DIJELI <cast_izraz>'):
@@ -630,6 +679,7 @@ class Multiplikativni_izraz(Node):
             result += self.children[2].generate()
             result += """\
             CALL DIVIDE
+            ADD R7, 8, R7
             PUSH R6\n"""
             return result
         elif self.isProduction('<multiplikativni_izraz> OP_MOD <cast_izraz>'):
@@ -637,6 +687,7 @@ class Multiplikativni_izraz(Node):
             result += self.children[2].generate()
             result += """\
             CALL MOD
+            ADD R7, 8, R7
             PUSH R6\n"""
             return result
 
@@ -660,7 +711,7 @@ class Slozena_naredba(Node):
             if not self.children[2].provjeri(new_tablica=self.tablica_znakova): return False
         return True
     
-    def generate(self, imena=None, num = -1):
+    def generate(self, imena=None, num = 0):
         if imena:
             i = 2
             imena.reverse()
@@ -674,10 +725,10 @@ class Slozena_naredba(Node):
         MOVE R7, R5\n"""
 
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
-            result += self.children[1].generate(num)
+            result += self.children[1].generate(num+1)
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
             result += self.children[1].generate(odmak_w=OdmakWrapper(-4))
-            result += self.children[2].generate(num)
+            result += self.children[2].generate(num+1)
         
         result += """\
         MOVE R5, R7
@@ -703,7 +754,7 @@ class Lista_naredbi(Node):
             if not self.children[1].provjeri(): return False
         return True
     
-    def generate(self, num = -1):
+    def generate(self, num = 0):
         result = ''
         if self.isProduction('<naredba>'):
             result += self.children[0].generate(num)
@@ -754,8 +805,8 @@ class Naredba(Node):
             if not self.children[0].provjeri(): return False
         return True
 
-    def generate(self, num = -1):
-        if not self.isProduction('<naredba_petlje>') and not self.isProduction('<izraz_naredba>'):
+    def generate(self, num = 0):
+        if not self.isProduction('<izraz_naredba>'):
             return self.children[0].generate(num=num)
         else:
             return self.children[0].generate()
@@ -808,7 +859,7 @@ class Naredba_grananja(Node):
             if not self.children[6].provjeri(): return False
         return True
 
-    def generate(self, num = -1):
+    def generate(self, num = 0):
         global cond_num
         result = ''
         local_num = cond_num
@@ -882,7 +933,7 @@ class Naredba_petlje(Node):
             if not self.children[6].provjeri(): return False
         return True
 
-    def generate(self):
+    def generate(self, num=0):
         global loop_num
         result = ''
         local_num = loop_num
@@ -895,7 +946,7 @@ class Naredba_petlje(Node):
              POP R0
              CMP R0, 0
              JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[4].generate(num = local_num)
+            result += self.children[4].generate(num = num)
             result += f"""INCLOOP_{local_num}\n"""
             result += f"""\
              JR LOOP_{local_num}
@@ -909,7 +960,7 @@ ENDLOOP_{local_num}\n"""
                  POP R0
                  CMP R0, 0
                  JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[5].generate(num = local_num)
+            result += self.children[5].generate(num = num)
             result += f"""INCLOOP_{local_num}\n"""
             result += f"""\
              JR LOOP_{local_num}
@@ -923,7 +974,7 @@ ENDLOOP_{local_num}\n"""
             POP R0
             CMP R0, 0
             JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[6].generate(num = local_num)
+            result += self.children[6].generate(num = num)
             result += f"""INCLOOP_{local_num}\n"""
             result += self.children[4].generate()
             result += f"""\
@@ -997,7 +1048,7 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
                 return False
         return True
 
-    def generate(self, num = -1):
+    def generate(self, num = 0):
         result = ''
 
         if self.isProduction('KR_BREAK TOCKAZAREZ'):
@@ -1007,16 +1058,21 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
             result += f"""\
         JR INCLOOP_{num}"""
         elif self.isProduction('KR_RETURN TOCKAZAREZ'):
-            result += """\
+            for i in range(num):
+                result += """\
         MOVE R5, R7
-        POP  R5
+        POP  R5\n"""
+            result += """\
         RET\n"""
         elif self.isProduction('KR_RETURN <izraz> TOCKAZAREZ'):
             result += self.children[1].generate()
             result += """\
-        POP R6
+        POP R6\n"""
+            for i in range(num):
+                result += """\
         MOVE R5, R7
-        POP  R5
+        POP  R5\n"""
+            result += """\
         RET\n"""
         return result
 

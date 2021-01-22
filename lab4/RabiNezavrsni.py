@@ -200,9 +200,35 @@ class Postfiks_izraz(Node):
             PUSH R6\n"""
             return result
         elif self.isProduction('<postfiks_izraz> OP_INC'):
-            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+            result = self.children[0].generate(for_assign=True)
+            result += """\
+            POP R0
+            LOAD R1, (R0)
+            ADD R1, 1, R1
+            STORE R1, (R0)
+            PUSH R0\n"""
+            if not for_assign:
+                result += """\
+            POP R0
+            LOAD R0, (R0)
+            SUB R0, 1, R0
+            PUSH R0\n"""
+            return result
         elif self.isProduction('<postfiks_izraz> OP_DEC'):
-            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+            result = self.children[0].generate(for_assign=True)
+            result += """\
+            POP R0
+            LOAD R1, (R0)
+            SUB R1, 1, R1
+            STORE R1, (R0)
+            PUSH R0\n"""
+            if not for_assign:
+                result += """\
+            POP R0
+            LOAD R0, (R0)
+            ADD R0, 1, R0
+            PUSH R0\n"""
+            return result
 
 class Lista_argumenata(Node):
     def __init__(self, data):
@@ -267,13 +293,13 @@ class Log_ili_izraz(Node):
         if self.isProduction('<log_i_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<log_ili_izraz> OP_ILI <log_i_izraz>'):
-            result = self.children[0].generate
-            result2 = self.children[2].generate
+            result = self.children[0].generate()
+            result2 = self.children[2].generate()
             result += f"""\
             POP R0
             CMP R0, 0
-            JR_NE {(num_of_lines(result2)+6)*4 }
-            PUSH R0"""
+            JR_NE %D {(num_of_lines(result2)+7)*4 }
+            PUSH R0\n"""
             result += result2
             result += """\
             POP R0
@@ -281,7 +307,7 @@ class Log_ili_izraz(Node):
             OR R0, R1, R0
             CMP R0, 0
             JR_EQ 8
-            MOVE R0, 1
+            MOVE 1, R0
             PUSH R0\n"""
             return result
 
@@ -319,20 +345,22 @@ class Log_i_izraz(Node):
         if self.isProduction('<bin_ili_izraz>'):
             return self.children[0].generate()
         elif self.isProduction('<log_i_izraz> OP_I <bin_ili_izraz>'):
-            result = self.children[0].generate
-            result2 = self.children[2].generate
+            result = self.children[0].generate()
+            result2 = self.children[2].generate()
             result += f"""\
             POP R0
             CMP R0, 0
-            JR_EQ {(num_of_lines(result2) + 6) * 4}
-            PUSH R0"""
+            JR_EQ %D {(num_of_lines(result2) + 7) * 4}
+            PUSH R0\n"""
             result += result2
             result += """\
             POP R0
             POP R1
             CMP R1, 0
-            JR_EQ 8
-            MOVE R0, 1
+            JR_EQ %D 12
+            MOVE 1, R0
+            JR 8
+            MOVE 1, R0
             PUSH R0\n"""
             return result
 
@@ -522,7 +550,7 @@ class Jednakosni_izraz(Node):
             POP R0
             POP R1
             CMP R0, R1
-            JR_NEQ C
+            JR_NEQ %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -535,7 +563,7 @@ class Jednakosni_izraz(Node):
             POP R0
             POP R1
             CMP R0, R1
-            JR_EQ C
+            JR_EQ %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -628,7 +656,7 @@ class Odnosni_izraz(Node):
             POP R1
             POP R0
             CMP R0, R1
-            JR_SGE C
+            JR_SGE %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -641,7 +669,7 @@ class Odnosni_izraz(Node):
             POP R1
             POP R0
             CMP R0, R1
-            JR_SLE C
+            JR_SLE %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -654,7 +682,7 @@ class Odnosni_izraz(Node):
             POP R1
             POP R0
             CMP R0, R1
-            JR_SGT C
+            JR_SGT %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -667,7 +695,7 @@ class Odnosni_izraz(Node):
             POP R1
             POP R0
             CMP R0, R1
-            JR_SLT C
+            JR_SLT %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0
@@ -735,8 +763,8 @@ class Aditivni_izraz(Node):
             result += self.children[0].generate()
             result += self.children[2].generate()
             result += """\
-            POP  R0
             POP  R1
+            POP  R0
             SUB  R0, R1, R0
             PUSH R0\n"""
         return result
