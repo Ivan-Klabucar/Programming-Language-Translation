@@ -243,9 +243,12 @@ END_MOD_LP
 END_MOD
             RET\n"""
 
-print(root.generate())
-print(multiply_definition)
-print(divide_definition)
-print(modulus_definition)
+res = root.generate()
+res += multiply_definition
+res += divide_definition
+res += modulus_definition
 for x in const_init_list:
-    print(x)
+    res += x + '\n'
+f = open('a.frisc', 'w')
+f.write(res)
+f.close
