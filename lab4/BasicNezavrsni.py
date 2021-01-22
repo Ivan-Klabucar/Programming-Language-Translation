@@ -90,6 +90,7 @@ class Primarni_izraz(Node):
     def generate(self, for_assign=False):
         if self.isProduction('IDN'):
             idn_entry, level, is_global = self.tablica_znakova.get_idn_and_other_info(self.children[0].ime)
+            retb, retv = is_seq(idn_entry.tip)
             result = ''
             if is_X(idn_entry.tip):
                 if is_global and not for_assign:
@@ -127,7 +128,7 @@ class Primarni_izraz(Node):
                 result += """\
                 PUSH R0\n"""
                 return result
-            elif is_seq(idn_entry.tip):
+            elif retb:
                 if is_global:
                     result += f"""\
                 MOVE {idn_entry.label}, R0
@@ -146,6 +147,10 @@ class Primarni_izraz(Node):
                 result += f"""\
                 MOVE R5, R0
                 ADD  R0, %D {idn_entry.odmak}, R0\n"""
+
+                if idn_entry.pointer:
+                    result += """\
+                LOAD R0, (R0)\n"""
                 
                 if level > 0:
                     result += """\
@@ -154,6 +159,8 @@ class Primarni_izraz(Node):
                 result += """\
                 PUSH R0\n"""
                 return result
+            elif is_function(idn_entry.tip):
+                return idn_entry.label
 
         elif self.isProduction('BROJ') or self.isProduction('ZNAK'):
             result = f"""\
@@ -308,6 +315,7 @@ class Init_deklarator(Node):
                 else:
                     result = """\
             SUB R7, 4, R7\n"""
+            # MISLIM DA TU FALI self.children[0].generate(odmak_w=odmak_w) / odmak_w.val -= 4 TREBA IMPLEMENTIRAT
                     return result # FIX too many values to unpack old comment
             elif self.isProduction('<izravni_deklarator> OP_PRIDRUZI <inicijalizator>'):
                 if self.children[0].br_elem:
@@ -654,8 +662,10 @@ class Slozena_naredba(Node):
     def generate(self, imena=None, num = -1):
         if imena:
             i = 2
-            for ime in imena.reverse():
+            imena.reverse()
+            for ime in imena:
                 self.tablica_znakova.get(ime).odmak = i * 4
+                if is_seq(self.tablica_znakova.get(ime).tip): self.tablica_znakova.get(ime).pointer = True
                 i += 1
 
         result = """\

@@ -2,6 +2,10 @@ from Node import Node
 from TablicaZnakova import TablicaZnakova, TabZnakEntry
 from HelperFunctions import *
 
+class NumberWrapper:
+    def __init__(self, num):
+        self.val = num
+
 class Izraz_pridruzivanja(Node):
     def __init__(self, data):
         super().__init__(data)
@@ -183,9 +187,18 @@ class Postfiks_izraz(Node):
                 PUSH R0\n"""
             return result
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA D_ZAGRADA'):
-            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+            result = f"""\
+            CALL {self.children[0].generate()}
+            PUSH R6\n"""
+            return result
         elif self.isProduction('<postfiks_izraz> L_ZAGRADA <lista_argumenata> D_ZAGRADA'):
-            return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
+            num_wrapper = NumberWrapper(0)
+            result = self.children[2].generate(num_wrapper=num_wrapper)
+            result += f"""\
+            CALL {self.children[0].generate()}
+            ADD R7, %D {num_wrapper.val * 4}, R7
+            PUSH R6\n"""
+            return result
         elif self.isProduction('<postfiks_izraz> OP_INC'):
             return 'TREBA IMPLEMENTIRAT Postfiks_izraz'
         elif self.isProduction('<postfiks_izraz> OP_DEC'):
@@ -209,6 +222,16 @@ class Lista_argumenata(Node):
             self.tipovi.extend(self.children[0].tipovi)
             self.tipovi.append(self.children[2].tip)
         return True
+    
+    def generate(self, num_wrapper):
+        if self.isProduction('<izraz_pridruzivanja>'):
+            num_wrapper.val += 1
+            return self.children[0].generate()
+        elif self.isProduction('<lista_argumenata> ZAREZ <izraz_pridruzivanja>'):
+            result = self.children[0].generate(num_wrapper=num_wrapper)
+            result += self.children[2].generate()
+            num_wrapper.val += 1
+            return result
 
 class Log_ili_izraz(Node):
     def __init__(self, data):
@@ -699,7 +722,7 @@ class Aditivni_izraz(Node):
     def generate(self):
         result = ''
         if self.isProduction('<multiplikativni_izraz>'):
-            result = self.children[0].generate()
+            result += self.children[0].generate()
         elif self.isProduction('<aditivni_izraz> PLUS <multiplikativni_izraz>'):
             result += self.children[0].generate()
             result += self.children[2].generate()
@@ -771,6 +794,7 @@ class Definicija_funkcije(Node):
     
     def generate(self):
         result = f'F_{self.children[1].ime}'
+        self.tablica_znakova.idn_declared(self.children[1].ime).label = result
         imena = None
         if not self.isProduction('<ime_tipa> IDN L_ZAGRADA KR_VOID D_ZAGRADA <slozena_naredba>') and self.children[3].imena: imena = self.children[3].imena  # FIX za void funkcije bacalo error
         result += self.children[5].generate(imena=imena)

@@ -54,3 +54,4 @@ class TabZnakEntry:
         self.lizraz = lizraz
         self.defined = defined
         self.label = None
+        self.pointer = False
