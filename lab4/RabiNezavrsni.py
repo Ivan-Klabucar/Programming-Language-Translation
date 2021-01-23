@@ -550,7 +550,7 @@ class Jednakosni_izraz(Node):
             POP R0
             POP R1
             CMP R0, R1
-            JR_NEQ %D 12
+            JR_NE %D 12
             MOVE 1, R0
             JR 8
             MOVE 0, R0

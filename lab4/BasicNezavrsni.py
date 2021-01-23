@@ -7,6 +7,7 @@ global cond_num
 
 loop_num = 0
 cond_num = 0
+loops = {}
 
 class OdmakWrapper:
     def __init__(self, odmak):
@@ -711,7 +712,7 @@ class Slozena_naredba(Node):
             if not self.children[2].provjeri(new_tablica=self.tablica_znakova): return False
         return True
     
-    def generate(self, imena=None, num = 0):
+    def generate(self, imena=None, num = 0, local_num = 0):
         if imena:
             i = 2
             imena.reverse()
@@ -725,10 +726,10 @@ class Slozena_naredba(Node):
         MOVE R7, R5\n"""
 
         if self.isProduction('L_VIT_ZAGRADA <lista_naredbi> D_VIT_ZAGRADA'):
-            result += self.children[1].generate(num+1)
+            result += self.children[1].generate(num+1, local_num=local_num)
         elif self.isProduction('L_VIT_ZAGRADA <lista_deklaracija> <lista_naredbi> D_VIT_ZAGRADA'):
             result += self.children[1].generate(odmak_w=OdmakWrapper(-4))
-            result += self.children[2].generate(num+1)
+            result += self.children[2].generate(num+1, local_num=local_num)
         
         result += """\
         MOVE R5, R7
@@ -754,13 +755,13 @@ class Lista_naredbi(Node):
             if not self.children[1].provjeri(): return False
         return True
     
-    def generate(self, num = 0):
+    def generate(self, num = 0, local_num=0):
         result = ''
         if self.isProduction('<naredba>'):
             result += self.children[0].generate(num)
         elif self.isProduction('<lista_naredbi> <naredba>'):
             result += self.children[0].generate(num)
-            result += self.children[1].generate(num)
+            result += self.children[1].generate(num, local_num=local_num)
         return result
 
 class Lista_deklaracija(Node):
@@ -805,11 +806,17 @@ class Naredba(Node):
             if not self.children[0].provjeri(): return False
         return True
 
-    def generate(self, num = 0):
-        if not self.isProduction('<izraz_naredba>'):
-            return self.children[0].generate(num=num)
-        else:
+    def generate(self, num = 0, local_num=0):
+        if self.isProduction('<izraz_naredba>'):
             return self.children[0].generate()
+        elif self.isProduction('<slozena_naredba>'):
+            return self.children[0].generate(num=num, local_num=local_num)
+        elif self.isProduction('<naredba_grananja>'):
+            return self.children[0].generate(num=num)
+        elif self.isProduction('<naredba_petlje>'):
+            return self.children[0].generate(num=num)
+        elif self.isProduction('<naredba_skoka>'):
+            return self.children[0].generate(num=num, local_num=local_num)
 
 class Izraz_naredba(Node):
     def __init__(self, data):
@@ -873,7 +880,7 @@ class Naredba_grananja(Node):
         POP R0
         CMP R0, 0
         JR_EQ ENDIF_{local_num}\n"""
-            result += self.children[4].generate(num)
+            result += self.children[4].generate(num, local_num=local_num)
             result += f"""ENDIF_{local_num}\n"""
         elif self.isProduction('KR_IF L_ZAGRADA <izraz> D_ZAGRADA <naredba> KR_ELSE <naredba>'):
             result += f"""IF_{local_num}\n"""
@@ -882,11 +889,11 @@ class Naredba_grananja(Node):
         POP R0
         CMP R0, 0
         JR_EQ ELSE_{local_num}\n"""
-            result += self.children[4].generate(num)
+            result += self.children[4].generate(num, local_num=local_num)
             result +=f"""\
         JR ENDIF_{local_num}\n"""
             result += f"""ELSE_{local_num}\n"""
-            result += self.children[6].generate(num)
+            result += self.children[6].generate(num, local_num=local_num)
             result += f"""ENDIF_{local_num}"""
         return result;
 
@@ -938,6 +945,7 @@ class Naredba_petlje(Node):
         result = ''
         local_num = loop_num
         loop_num += 1
+        loops[local_num] = num
 
         if self.isProduction('KR_WHILE L_ZAGRADA <izraz> D_ZAGRADA <naredba>'):
             result += f"""LOOP_{local_num} \n"""
@@ -946,7 +954,7 @@ class Naredba_petlje(Node):
              POP R0
              CMP R0, 0
              JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[4].generate(num = num)
+            result += self.children[4].generate(num = num, local_num=local_num)
             result += f"""INCLOOP_{local_num}\n"""
             result += f"""\
              JR LOOP_{local_num}
@@ -960,7 +968,7 @@ ENDLOOP_{local_num}\n"""
                  POP R0
                  CMP R0, 0
                  JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[5].generate(num = num)
+            result += self.children[5].generate(num = num, local_num=local_num)
             result += f"""INCLOOP_{local_num}\n"""
             result += f"""\
              JR LOOP_{local_num}
@@ -974,7 +982,7 @@ ENDLOOP_{local_num}\n"""
             POP R0
             CMP R0, 0
             JR_EQ ENDLOOP_{local_num}\n"""
-            result += self.children[6].generate(num = num)
+            result += self.children[6].generate(num = num, local_num=local_num)
             result += f"""INCLOOP_{local_num}\n"""
             result += self.children[4].generate()
             result += f"""\
@@ -1048,15 +1056,23 @@ class Naredba_skoka(Node):         # Ovo tu treb jos onak fkt iztestirat
                 return False
         return True
 
-    def generate(self, num = 0):
+    def generate(self, num = 0, local_num=0):
         result = ''
 
         if self.isProduction('KR_BREAK TOCKAZAREZ'):
+            for i in range(num - loops[local_num]):
+                result += """\
+        MOVE R5, R7
+        POP  R5\n"""
             result += f"""\
-        JR ENDLOOP_{num}"""
+        JR ENDLOOP_{local_num}\n"""
         elif self.isProduction('KR_CONTINUE TOCKAZAREZ'):
+            for i in range(num - loops[local_num]):
+                result += """\
+            MOVE R5, R7
+            POP  R5\n"""
             result += f"""\
-        JR INCLOOP_{num}"""
+        JR INCLOOP_{local_num}\n"""
         elif self.isProduction('KR_RETURN TOCKAZAREZ'):
             for i in range(num):
                 result += """\
